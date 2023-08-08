@@ -54,9 +54,9 @@ if(getHistos):
             bin_hi = branches[branch][3]
             
             histo = Events.Histo1D((branch,             branch,              nbins, bin_lo, bin_hi), branches[branch][0])
-            histo_t = Events_t.Histo1D((branch,         branch+"_LeptonicT", nbins, bin_lo, bin_lo), branches[branch][0])
-            histo_W = Events_W.Histo1D((branch,         branch+"_LeptonicW", nbins, bin_lo, bin_lo), branches[branch][0])
-            histo_noLep = Events_noLep.Histo1D((branch, branch+"_noLep",     nbins, bin_lo, bin_lo), branches[branch][0])
+            histo_t = Events_t.Histo1D((branch,         branch+"_LeptonicT", nbins, bin_lo, bin_hi), branches[branch][0])
+            histo_W = Events_W.Histo1D((branch,         branch+"_LeptonicW", nbins, bin_lo, bin_hi), branches[branch][0])
+            histo_noLep = Events_noLep.Histo1D((branch, branch+"_noLep",     nbins, bin_lo, bin_hi), branches[branch][0])
             histo_diLep = Events_diLep.Histo1D((branch, branch+"_diLep",     nbins, bin_lo, bin_hi), branches[branch][0])
             
             histfile.cd()
@@ -92,7 +92,6 @@ colors = [kOrange, kRed, kBlue-9, kGreen+2]
 
 tags = ["", "_LeptonicT", "_LeptonicW", "_noLep", "_diLep"]
 
-isFirst = True
 for branch in branches:
     for tag in tags:
         count, nplot = 0, 0
