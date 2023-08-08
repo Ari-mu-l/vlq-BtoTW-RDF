@@ -30,7 +30,10 @@ samples = {'Bp800':'Bprime_M800__20UL18/RDF_BprimeBtoTW_M-800_NWALO_TuneCP5_13Te
 ###### Add branches here ####
 
 branches = {"M_reco": ["Bprime_mass", 50, 0, 4000, "[GeV]"],
-            "Number of opposite-side jets": ["NOS_gcJets_central", 10, 0, 10, ""]
+            "Number of opposite-side jets": ["NOS_gcJets_central", 10, 0, 10, ""],
+            "Number of same-side jets": ["NSS_gcJets_central", 7, 0, 7, ""],
+            "Number of opposite-side b-tagged jets": ["NOS_gcJets_DeepFlavL", 7, 0, 7, ""],
+            "Number of same-side b-tagged jets": ["NSS_gcJets_DeepFlavL", 3, 0, 3, ""],
 }
 
 if(getHistos):
