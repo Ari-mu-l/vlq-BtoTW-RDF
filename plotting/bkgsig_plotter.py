@@ -4,7 +4,7 @@ from array import array
 from ROOT import *
 
 getHistos = True
-#getHistos = False
+yLog = False
 
 indir = "root://cmseos.fnal.gov//store/user/xshen/BtoTW_Jul2023/Run2018_Jul2023/"
 outdir = os.getcwd()+'/plots_bkgsig/'
@@ -149,11 +149,14 @@ categories = {#"DY": ["DYMHT1200", "DYMHT200", "DYMHT2500"],
           }
 
 tags = {"":"",
+        "_tTag":"leptonicParticle==1",
+        "_WTag":"leptonicParticle==0"
         "_trueLepT":"trueLeptonicT==1 && trueLeptonicW==0 && leptonicParticle==1",
         "_trueLepW":"trueLeptonicT==0 && trueLeptonicW==1 && leptonicParticle==0",
-        "_flipLepT":"trueLeptonicT==0 && trueLeptonicW==1 && leptonicParticle==1",
-        "_flipLepW":"trueLeptonicT==1 && trueLeptonicW==0 && leptonicParticle==0",
+        "_falseLepT":"trueLeptonicT==0 && trueLeptonicW==1 && leptonicParticle==1",
+        "_falseLepW":"trueLeptonicT==1 && trueLeptonicW==0 && leptonicParticle==0",
 }
+
 if(getHistos):
 
     gInterpreter.Declare("""
@@ -167,13 +170,16 @@ if(getHistos):
 
     for sample in samples:
         filename = indir + samples[sample]
-        Events = RDataFrame("Events", filename).Define("Generator_weight","(float) 1.0").Define("weights","weights(Generator_weight,{},{},{})".format(lumi,xsec[sample],nRun[sample]))
+        Events = RDataFrame("Events", filename).Filter("NJets_forward>0 && Bprime_mass>0").Define("Generator_weight","(float) 1.0").Define("weights","weights(Generator_weight,{},{},{})".format(lumi,xsec[sample],nRun[sample]))
+
+        Events_tTag = Events.Filter(tags["_tTag"])
+        Events_WTag = Events.Filter(tags["_WTag"])
 
         if("Bp" in sample):
-            Events_lepT = Events.Filter(tags["_trueLepT"])
-            Events_lepW = Events.Filter(tags["_trueLepW"])
-            Events_flipT = Events.Filter(tags["_flipLepT"])
-            Events_flipW = Events.Filter(tags["_flipLepW"])
+            Events_trueLepT = Events.Filter(tags["_trueLepT"])
+            Events_trueLepW = Events.Filter(tags["_trueLepW"])
+            Events_falseLepT = Events.Filter(tags["_falseLepT"])
+            Events_falseLepW = Events.Filter(tags["_falseLepW"])
 
         for branch in branches:
             # set histogram bins
@@ -182,20 +188,24 @@ if(getHistos):
             bin_hi = branches[branch][3]
             
             histo = Events.Histo1D((branch, branch, nbins, bin_lo, bin_hi), branches[branch][0], "weights")
-            
-            if("Bp" in sample):
-                histo_lepT = Events_lepT.Histo1D((branch, branch, nbins, bin_lo, bin_hi), branches[branch][0], "weights")
-                histo_lepW = Events_lepW.Histo1D((branch, branch, nbins, bin_lo, bin_hi), branches[branch][0], "weights")
-                histo_flipT = Events_flipT.Histo1D((branch, branch, nbins, bin_lo, bin_hi), branches[branch][0], "weights")
-                histo_flipW = Events_flipW.Histo1D((branch, branch, nbins, bin_lo, bin_hi), branches[branch][0], "weights")
+            histo_tTag = Events_tTag.Histo1D((branch, branch, nbins, bin_lo, bin_hi), branches[branch][0], "weights")       
+            histo_WTag = Events_WTag.Histo1D((branch, branch, nbins, bin_lo, bin_hi), branches[branch][0], "weights")
 
             histfile.cd()
             histo.Write(branch+"_"+sample+"_weighted")
+            histo_tTag.Write(branch+"_"+sample+"_weighted"+"_tTag")
+            histo_WTag.Write(branch+"_"+sample+"_weighted"+"_WTag")
+
             if("Bp" in sample):
-                histo_lepT.Write(branch+"_"+sample+"_weighted"+"_trueLepT")
-                histo_lepW.Write(branch+"_"+sample+"_weighted"+"_trueLepW")
-                histo_flipT.Write(branch+"_"+sample+"_weighted"+"_flipLepT")
-                histo_flipW.Write(branch+"_"+sample+"_weighted"+"_flipLepW")
+                histo_trueLepT = Events_trueLepT.Histo1D((branch, branch, nbins, bin_lo, bin_hi), branches[branch][0], "weights")
+                histo_trueLepW = Events_trueLepW.Histo1D((branch, branch, nbins, bin_lo, bin_hi), branches[branch][0], "weights")
+                histo_falseLepT = Events_falseLepT.Histo1D((branch, branch, nbins, bin_lo, bin_hi), branches[branch][0], "weights")
+                histo_falseLepW = Events_falseLepW.Histo1D((branch, branch, nbins, bin_lo, bin_hi), branches[branch][0], "weights")
+
+                histo_trueLepT.Write(branch+"_"+sample+"_weighted"+"_trueLepT")
+                histo_trueLepW.Write(branch+"_"+sample+"_weighted"+"_trueLepW")
+                histo_falseLepT.Write(branch+"_"+sample+"_weighted"+"_falseLepT")
+                histo_falseLepW.Write(branch+"_"+sample+"_weighted"+"_falseLepW")
 
 
     for category in categories:
@@ -203,12 +213,21 @@ if(getHistos):
         if(len(sampleList)>1):
             for branch in branches:
                 histo1 = histfile.Get(branch + "_" + sampleList[0]+"_weighted")
+                histo1_tTag = histfile.Get(branch + "_" + sampleList[0]+"_weighted_tTag")
+                histo1_WTag = histfile.Get(branch + "_" + sampleList[0]+"_weighted_WTag")
 
                 for i in range(1,len(sampleList)):
                     histo =  histfile.Get(branch + "_" + sampleList[i]+"_weighted")
+                    histo_tTag = histfile.Get(branch + "_" + sampleList[i]+"_weighted_tTag")
+                    histo_WTag = histfile.Get(branch + "_" + sampleList[i]+"_weighted_WTag")
+
                     histo1.Add(histo)
+                    histo1_tTag.Add(histo_tTag)
+                    histo1_WTag.Add(histo_WTag)
         
                 histo1.Write(branch + "_" + category+"_weighted")
+                histo1_tTag.Write(branch + "_" + category+"_weighted_tTag")
+                histo1_WTag.Write(branch + "_" + category+"_weighted_WTag")
 
     histfile.Close()
 
@@ -240,7 +259,7 @@ colors_bkg = {"QCD":40,
 }
 #fillstyles = [3002, 3006, 3375, 3357]
 
-for tag in tags:
+def plot(bkgTag, sigTag):
     for branch in branches:
         c1 = TCanvas("c", "c", 600,400)
         gStyle.SetOptStat(0)
@@ -248,9 +267,9 @@ for tag in tags:
         Legend = TLegend(0.6, 0.7, 0.9, 0.9)
         histo_stack_sig = THStack(branch, branch)
         histo_stack_bkg = THStack(branch, branch)
-        
+
         for sig in sig_list:
-            histo = histfile.Get(branch + "_" + sig + "_weighted" + tag)
+            histo = histfile.Get(branch + "_" + sig + "_weighted" + sigTag) 
         
             histo.SetLineColor(colors_sig[sig])
                  
@@ -258,14 +277,17 @@ for tag in tags:
             histo_stack_sig.Add(histo)
 
         for bkg in bkg_list:
-            histo = histfile.Get(branch + "_" + bkg + "_weighted")
+            histo = histfile.Get(branch + "_" + bkg + "_weighted" + bkgTag)
         
             histo.SetLineColor(colors_bkg[bkg])
             histo.SetFillColor(colors_bkg[bkg])
 
             Legend.AddEntry(histo, bkg, 'f')
             histo_stack_bkg.Add(histo)
-            
+
+        if(yLog):
+            gPad.SetLogy()
+    
         xname = branch+branches[branch][-1]
         yname = "Normalized frequency (Unweighted)"
         
@@ -274,9 +296,22 @@ for tag in tags:
         Legend.Draw()
         c1.Update()
         
-        histo_stack_sig.GetXaxis().SetTitle(xname)
-        histo_stack_sig.GetYaxis().SetTitle(yname)
-        histo_stack_sig.GetXaxis().SetRangeUser(branches[branch][2], branches[branch][3])
+        histo_stack_bkg.GetXaxis().SetTitle(xname)
+        histo_stack_bkg.GetYaxis().SetTitle(yname)
+        histo_stack_bkg.GetXaxis().SetRangeUser(branches[branch][2], branches[branch][3])
         
         c1.Modified()
-        c1.SaveAs(outdir + "histos_" + branch + tag + ".png")
+
+        if(yLog):
+            outname = outdir + "histos_" + branch + sigTag + "_logY.png"
+        else:
+            outname = outdir + "histos_" + branch + sigTag + ".png"
+        c1.SaveAs(outname)
+
+plot("", "")
+plot("_tTag", "_tTag")
+plot("_WTag", "_WTag")
+plot("_tTag", "_trueLepT")
+plot("_tTag", "_falseLepT")
+plot("_WTag", "_trueLepW")
+plot("_WTag", "_falseLepW")
