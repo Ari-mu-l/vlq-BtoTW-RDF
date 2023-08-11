@@ -148,6 +148,12 @@ categories = {#"DY": ["DYMHT1200", "DYMHT200", "DYMHT2500"],
               #"TTbar":["TTToSemiLeptonic"],
           }
 
+tags = {"":"",
+        "_trueLepT":"trueLeptonicT==1 && trueLeptonicW==0 && leptonicParticle==1",
+        "_trueLepW":"trueLeptonicT==0 && trueLeptonicW==1 && leptonicParticle==0",
+        "_flipLepT":"trueLeptonicT==0 && trueLeptonicW==1 && leptonicParticle==1",
+        "_flipLepW":"trueLeptonicT==1 && trueLeptonicW==0 && leptonicParticle==0",
+}
 if(getHistos):
 
     gInterpreter.Declare("""
@@ -163,6 +169,12 @@ if(getHistos):
         filename = indir + samples[sample]
         Events = RDataFrame("Events", filename).Define("Generator_weight","(float) 1.0").Define("weights","weights(Generator_weight,{},{},{})".format(lumi,xsec[sample],nRun[sample]))
 
+        if("Bp" in sample):
+            Events_lepT = Events.Filter(tags["_trueLepT"])
+            Events_lepW = Events.Filter(tags["_trueLepW"])
+            Events_flipT = Events.Filter(tags["_flipLepT"])
+            Events_flipW = Events.Filter(tags["_flipLepW"])
+
         for branch in branches:
             # set histogram bins
             nbins = branches[branch][1]
@@ -171,8 +183,19 @@ if(getHistos):
             
             histo = Events.Histo1D((branch, branch, nbins, bin_lo, bin_hi), branches[branch][0], "weights")
             
+            if("Bp" in sample):
+                histo_lepT = Events_lepT.Histo1D((branch, branch, nbins, bin_lo, bin_hi), branches[branch][0], "weights")
+                histo_lepW = Events_lepW.Histo1D((branch, branch, nbins, bin_lo, bin_hi), branches[branch][0], "weights")
+                histo_flipT = Events_flipT.Histo1D((branch, branch, nbins, bin_lo, bin_hi), branches[branch][0], "weights")
+                histo_flipW = Events_flipW.Histo1D((branch, branch, nbins, bin_lo, bin_hi), branches[branch][0], "weights")
+
             histfile.cd()
             histo.Write(branch+"_"+sample+"_weighted")
+            if("Bp" in sample):
+                histo_lepT.Write(branch+"_"+sample+"_weighted"+"_trueLepT")
+                histo_lepW.Write(branch+"_"+sample+"_weighted"+"_trueLepW")
+                histo_flipT.Write(branch+"_"+sample+"_weighted"+"_flipLepT")
+                histo_flipW.Write(branch+"_"+sample+"_weighted"+"_flipLepW")
 
 
     for category in categories:
@@ -182,7 +205,6 @@ if(getHistos):
                 histo1 = histfile.Get(branch + "_" + sampleList[0]+"_weighted")
 
                 for i in range(1,len(sampleList)):
-                    branch + "_" + sampleList[i]+"_weighted"
                     histo =  histfile.Get(branch + "_" + sampleList[i]+"_weighted")
                     histo1.Add(histo)
         
@@ -218,45 +240,43 @@ colors_bkg = {"QCD":40,
 }
 #fillstyles = [3002, 3006, 3375, 3357]
 
-for branch in branches:
-    c1 = TCanvas("c", "c", 600,400)
-    gStyle.SetOptStat(0)
+for tag in tags:
+    for branch in branches:
+        c1 = TCanvas("c", "c", 600,400)
+        gStyle.SetOptStat(0)
 
-    Legend = TLegend(0.6, 0.7, 0.9, 0.9)
-    histo_stack_sig = THStack(branch, branch)
-    histo_stack_bkg = THStack(branch, branch)
-
-    for sig in sig_list:
-        histo = histfile.Get(branch + "_" + sig + "_weighted")
+        Legend = TLegend(0.6, 0.7, 0.9, 0.9)
+        histo_stack_sig = THStack(branch, branch)
+        histo_stack_bkg = THStack(branch, branch)
         
-        histo.SetLineColor(colors_sig[sig])
-        #histo.SetFillColor(colors_sig[sample])
-        #histo.SetFillStyle(3002)                                                                                                        
-        Legend.AddEntry(histo, sig, 'l')
-        histo_stack_sig.Add(histo)
-
-    for bkg in bkg_list:
-        histo = histfile.Get(branch + "_" + bkg + "_weighted")
+        for sig in sig_list:
+            histo = histfile.Get(branch + "_" + sig + "_weighted" + tag)
         
-        histo.SetLineColor(colors_bkg[bkg])
-        histo.SetFillColor(colors_bkg[bkg])
-        #histo.SetFillStyle(3002)
+            histo.SetLineColor(colors_sig[sig])
+                 
+            Legend.AddEntry(histo, sig, 'l')
+            histo_stack_sig.Add(histo)
 
-        Legend.AddEntry(histo, bkg, 'f')
-        histo_stack_bkg.Add(histo)
+        for bkg in bkg_list:
+            histo = histfile.Get(branch + "_" + bkg + "_weighted")
+        
+            histo.SetLineColor(colors_bkg[bkg])
+            histo.SetFillColor(colors_bkg[bkg])
+
+            Legend.AddEntry(histo, bkg, 'f')
+            histo_stack_bkg.Add(histo)
             
-    xname = branch+branches[branch][-1]
-    yname = "Normalized frequency (Unweighted)"
+        xname = branch+branches[branch][-1]
+        yname = "Normalized frequency (Unweighted)"
         
-    #histo_stack_sig.Draw("HIST NOSTACK SAME")
-    histo_stack_bkg.Draw("HIST")
-    histo_stack_sig.Draw("HIST NOSTACK SAME")
-    Legend.Draw()
-    c1.Update()
+        histo_stack_bkg.Draw("HIST")
+        histo_stack_sig.Draw("HIST NOSTACK SAME")
+        Legend.Draw()
+        c1.Update()
         
-    histo_stack_sig.GetXaxis().SetTitle(xname)
-    histo_stack_sig.GetYaxis().SetTitle(yname)
-    histo_stack_sig.GetXaxis().SetRangeUser(branches[branch][2], branches[branch][3])
+        histo_stack_sig.GetXaxis().SetTitle(xname)
+        histo_stack_sig.GetYaxis().SetTitle(yname)
+        histo_stack_sig.GetXaxis().SetRangeUser(branches[branch][2], branches[branch][3])
         
-    c1.Modified()
-    c1.SaveAs(outdir + "histos_" + branch + ".png")
+        c1.Modified()
+        c1.SaveAs(outdir + "histos_" + branch + tag + ".png")
