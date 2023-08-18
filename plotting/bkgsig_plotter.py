@@ -8,8 +8,9 @@ from ROOT import *
 ###############
 getHistos = True
 yLog = False
-withTags = False
-noTag = True
+withTags = True
+noTag = False
+plotSeparate = False
 
 indir = "root://cmseos.fnal.gov//store/user/xshen/BtoTW_Aug2023_2018/"
 outdir = os.getcwd()+'/plots_bkgsig/'
@@ -276,9 +277,6 @@ colors_bkg = {"QCD":40,
 
 def plot(bkgTag, sigTag):
     for branch in branches:
-        c1 = TCanvas("c", "c", 600,400)
-        gStyle.SetOptStat(0)
-
         Legend = TLegend(0.6, 0.7, 0.9, 0.9)
         histo_stack_sig = THStack(branch, branch)
         histo_stack_bkg = THStack(branch, branch)
@@ -300,37 +298,87 @@ def plot(bkgTag, sigTag):
             Legend.AddEntry(histo, bkg, 'f')
             histo_stack_bkg.Add(histo)
 
-        if(yLog):
-            gPad.SetLogy()
-    
         xname = branch+branches[branch][-1]
-        yname = "Normalized frequency (Unweighted)"
-        
-        histo_stack_bkg.Draw("HIST")
-        histo_stack_sig.Draw("HIST NOSTACK SAME")
-        Legend.Draw()
-        c1.Update()
-        
-        histo_stack_bkg.GetXaxis().SetTitle(xname)
-        histo_stack_bkg.GetYaxis().SetTitle(yname)
-        histo_stack_bkg.GetXaxis().SetRangeUser(branches[branch][2], branches[branch][3])
-        
-        c1.Modified()
+        yname = "Count"
 
-        if(yLog):
-            outname = outdir + "histos_" + branch + sigTag + "_logY.png"
+        if(plotSeparate):
+            c_bkg = TCanvas("c", "c", 600,400)
+            gStyle.SetOptStat(0)
+
+            if(yLog):
+                gPad.SetLogy()
+
+            histo_stack_bkg.Draw("HIST")
+            Legend.Draw()
+            
+            histo_stack_bkg.GetXaxis().SetTitle(xname)
+            histo_stack_bkg.GetYaxis().SetTitle(yname)
+            histo_stack_bkg.GetXaxis().SetRangeUser(branches[branch][2], branches[branch][3])
+
+            c_bkg.Modified()
+
+            if(yLog):
+                outname = outdir + "histos_" + branch + bkgTag + "bkg_logY.png"
+            else:
+                outname = outdir + "histos_" + branch + bkgTag + "bkg.png"
+
+            c_bkg.SaveAs(outname)
+            c_bkg.Close()
+
+            c_sig = TCanvas("c", "c", 600,400)
+            gStyle.SetOptStat(0)
+
+            if(yLog):
+                gPad.SetLogy()
+
+            histo_stack_sig.Draw("HIST NOSTACK")
+            Legend.Draw()
+
+            histo_stack_sig.GetXaxis().SetTitle(xname)
+            histo_stack_sig.GetYaxis().SetTitle(yname)
+            histo_stack_sig.GetXaxis().SetRangeUser(branches[branch][2], branches[branch][3])
+
+            c_sig.Modified()
+
+            if(yLog):
+                outname = outdir + "histos_" + branch + sigTag + "sig_logY.png"
+            else:
+                outname = outdir + "histos_" + branch + sigTag + "sig.png"
+            c_sig.SaveAs(outname)
+
         else:
-            outname = outdir + "histos_" + branch + sigTag + ".png"
-        c1.SaveAs(outname)
+            c1 = TCanvas("c", "c", 600,400)
+            gStyle.SetOptStat(0)
+
+            if(yLog):
+                gPad.SetLogy()
+    
+            histo_stack_bkg.Draw("HIST")
+            histo_stack_sig.Draw("HIST NOSTACK SAME")
+            Legend.Draw()
+            c1.Update()
+        
+            histo_stack_bkg.GetXaxis().SetTitle(xname)
+            histo_stack_bkg.GetYaxis().SetTitle(yname)
+            histo_stack_bkg.GetXaxis().SetRangeUser(branches[branch][2], branches[branch][3])
+        
+            c1.Modified()
+
+            if(yLog):
+                outname = outdir + "histos_" + branch + sigTag + "_logY.png"
+            else:
+                outname = outdir + "histos_" + branch + sigTag + ".png"
+            c1.SaveAs(outname)
 
 if(withTags):
     for tag in tags_general:
         plot(tag, tag)
 
-    plot("_tTag", "_trueLepT")
-    plot("_tTag", "_falseLepT")
-    plot("_WTag", "_trueLepW")
-    plot("_WTag", "_falseLepW")
+    if(~plotSeparate):
+        plot("_tTag", "_trueLepT")
+        plot("_tTag", "_falseLepT")
+        plot("_WTag", "_trueLepW")
+        plot("_WTag", "_falseLepW")
 
 if(noTag):
     plot("", "")
