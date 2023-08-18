@@ -8,8 +8,8 @@ from ROOT import *
 ###############
 getHistos = True
 yLog = False
-withTags = True
-noTag = False
+withTags = False
+noTag = True
 plotSeparate = False
 
 indir = "root://cmseos.fnal.gov//store/user/xshen/BtoTW_Aug2023_2018/"
@@ -138,7 +138,67 @@ xsec = {"Bp800":1.0,
 
 ###### Add branches, categories, tags here ####
 
-branches = {"M_reco": ["Bprime_mass", 50, 0, 4000, "[GeV]"],
+branches = {"nSignalIsoMu":["nSignalIsoMu", 10, 0, 10, ""],
+            "nSignalIsoEl":["nSignalIsoEl", 10, 0, 10, ""],
+            "nVetoIsoLep":["nVetoIsoLep", 10, 0, 10, ""],
+            "lepton_pt":["lepton_pt", 50, 0, 1000, "[GeV]"],
+            "lepton_eta":["lepton_eta", 40, -4, 4, ""],
+            "lepton_miniIso":["lepton_miniIso", 50, 0, 0.2, ""],
+            "NJets_central":["NJets_central", 20, 0, 20, ""],
+            "NJets_DeepFlavL":["NJets_DeepFlavL", 20, 0, 20, ""],
+            "NJets_forward":["NJets_forward", 20, 0, 20, ""],
+            "NFatJets":["NFatJets", 10, 0, 10, ""],
+            "NOS_gcJets_central":["NOS_gcJets_central", 20, 0, 20, ""],
+            "NSS_gcJets_central":["NSS_gcJets_central", 20, 0, 20, ""],
+            "NOS_gcJets_DeepFlavL":["NOS_gcJets_DeepFlavL", 15, 0, 15, ""],
+            "NSS_gcJets_DeepFlavL":["NSS_gcJets_DeepFlavL", 15, 0, 15, ""],
+            "NOS_gcFatJets":["NOS_gcFatJets", 10, 0, 10, ""], # no NSS_gcFatJets yet. FIXME
+            #"Jet_HT":["Jet_HT", 50, 0, 5000, "[GeV]"],
+            #"Jet_ST":["Jet_ST", 50, 0, 5000, "[GeV]"],
+            #"FatJet_pt_1":["FatJet_pt_1", 50, 0, 1500, "[GeV]"],
+            #"FatJet_pt_2":["FatJet_pt_2", 50, 0, 1500, "[GeV]"],
+            #"FatJet_sdMass_1":["FatJet_sdMass_1", 50, 0, 500, "[Gev]"],
+            #"FatJet_sdMass_2":["FatJet_sdMass_2", 50, 0, 500, "[Gev]"],
+            "dpak8_J_1":["dpak8_J_1", 50, 0, 1, ""],
+            "dpak8_J_2":["dpak8_J_2", 50, 0, 1, ""],
+            "dpak8_T_1":["dpak8_T_1", 50, 0, 1, ""],
+            "dpak8_T_2":["dpak8_T_2", 50, 0, 1, ""],
+            "dpak8_W_1":["dpak8_W_1", 50, 0, 1, ""],
+            "dpak8_W_2":["dpak8_W_2", 50, 0, 1, ""],
+            "dpak8_tag_1":["dpak8_tag_1", 3, 0, 3, ""],
+            "dpak8_tag_2":["dpak8_tag_1", 3, 0, 3, ""],
+            "nJ_dpak8":["nJ_dpak8", 20, 0, 20, ""],
+            "nT_dpak8":["nJ_dpak8", 15, 0, 15, ""],
+            "nW_dpak8":["nW_dpak8", 15, 0, 15, ""],
+            "pNet_J_1":["pNet_J_1", 50, 0, 1, ""],
+            "pNet_J_2":["pNet_J_2", 50, 0, 1, ""],
+            "pNet_T_1":["pNet_T_1", 50, 0, 1, ""],
+            "pNet_T_2":["pNet_T_2", 50, 0, 1, ""],
+            "pNet_W_1":["pNet_W_1", 50, 0, 1, ""],
+            "pNet_W_2":["pNet_W_2", 50, 0, 1, ""],
+            "pNet_tag_1":["pNet_tag_1", 3, 0, 3, ""],
+            "pNet_tag_2":["pNet_tag_2", 3, 0, 3, ""],
+            "nJ_pNet":["nJ_pNet", 20, 0, 20, ""],
+            "nT_pNet":["nT_pNet", 15, 0, 15, ""],
+            "nW_pNet":["nW_pNet", 15, 0, 15, ""],
+            "tau21_1":["tau21_1", 50, 0, 1, ""],
+            "tau21_2":["tau21_2", 50, 0, 1, ""],
+            "minDR_lep_FatJet":["minDR_lep_FatJet", 50, 0, 5, "[GeV]"],
+            "ptRel_lep_FatJet":["ptRel_lep_FatJet", 50, 0, 500, "[GeV]"],
+            "minDR_leadAK8otherAK8":["minDR_leadAK8otherAK8", 50, 0, 5, "[GeV]"],
+            "minDR_lep_Jet":["minDR_lep_Jet", 50, 0, 5, "[GeV]"],
+            "ptRel_lep_Jet":["ptRel_lep_Jet", 50, 0, 500, "[GeV]"],
+            "W_pt":["W_pt", 50, 0, 1000, "[GeV]"],
+            "W_eta":["W_eta", 40, -4, 4, ""],
+            "W_MT":["W_MT", 50, 0, 1500, "[GeV]"],
+            "DR_W_lep":["DR_W_lep", 50, 0, 5, ""],
+            "minM_lep_Jet":["minM_lep_Jet", 50, 0, 1000, "[GeV]"],
+            "t_pt":["t_pt", 50, 0, 1000, "[GeV]"],
+            "t_eta":["t_eta", 50, -4, 4, ""],
+            "DR_W_b":["DR_W_b", 50, 0, 7, ""],
+            "Bprime_chi2":["Bprime_chi2", 50, 0, 1000, ""],
+            "Bdecay_obs":["Bdecay_obs", 4, 0, 4, ""],
+            #"M_reco": ["Bprime_mass", 50, 0, 4000, "[GeV]"],
             #"pt_reco": ["Bprime_pt", 50, 0, 4000, "[GeV]"],
             #"Number of opposite-side jets": ["NOS_gcJets_central", 15, 0, 15, ""],
             #"Number of same-side jets": ["NSS_gcJets_central", 15, 0, 15, ""],
@@ -217,7 +277,6 @@ if(getHistos):
 
         if(withTags):
             CreateHistos(Events, tags_general, branches, sample)
-        
             if("Bp" in sample):
                 CreateHistos(Events, tags_signal, branches, sample)
 
@@ -228,6 +287,7 @@ if(getHistos):
                 bin_lo = branches[branch][2]
                 bin_hi = branches[branch][3]
             
+                print(branch, nbins, bin_lo, bin_hi)
                 histo = Events.Histo1D((branch, branch, nbins, bin_lo, bin_hi), branches[branch][0], "weights")
 
                 histfile.cd()
