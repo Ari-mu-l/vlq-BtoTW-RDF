@@ -1,4 +1,4 @@
-import os, sys
+import os, sys, time
 from numpy import linspace
 from array import array
 from ROOT import *
@@ -6,11 +6,13 @@ from ROOT import *
 getHistos = True
 yLog = False
 
-indir = "root://cmseos.fnal.gov//store/user/xshen/BtoTW_Jul2023/Run2018_Jul2023/"
+start_time1 = time.time()
+
+indir = "root://cmseos.fnal.gov//store/user/xshen/BtoTW_Aug2023_2018/"
 outdir = os.getcwd()+'/plots_bkgsig/'
 if not os.path.exists(outdir): os.system('mkdir -p '+outdir)
 
-samples = {'Bp800':'Bprime_M800__20UL18_hadd.root',
+samples = {'Bp800':'Bprime_M800_20UL18_hadd.root',
            'Bp1000':'Bprime_M1000_20UL18_hadd.root',
            'Bp1200':'Bprime_M1200_20UL18_hadd.root',
            'Bp1300':'Bprime_M1300_20UL18_hadd.root',
@@ -135,10 +137,11 @@ xsec = {"Bp800":1.0,
 
 branches = {"M_reco": ["Bprime_mass", 50, 0, 4000, "[GeV]"],
             "pt_reco": ["Bprime_pt", 50, 0, 4000, "[GeV]"],
-            #"Number of opposite-side jets": ["NOS_gcJets_central", 15, 0, 15, ""],
-            #"Number of same-side jets": ["NSS_gcJets_central", 15, 0, 15, ""],
-            #"Number of opposite-side b-tagged jets": ["NOS_gcJets_DeepFlavL", 15, 0, 15, ""],
-            #"Number of same-side b-tagged jets": ["NSS_gcJets_DeepFlavL", 15, 0, 15, ""],
+            "Number of opposite-side jets": ["NOS_gcJets_central", 15, 0, 15, ""],
+            "Number of same-side jets": ["NSS_gcJets_central", 15, 0, 15, ""],
+            "Number of opposite-side b-tagged jets": ["NOS_gcJets_DeepFlavL", 15, 0, 15, ""],
+            "Number of same-side b-tagged jets": ["NSS_gcJets_DeepFlavL", 15, 0, 15, ""],
+            "Number of opposite-side fatjets": ["NOS_gcFatJets", 15, 0, 15, ""],
 }
 
 categories = {#"DY": ["DYMHT1200", "DYMHT200", "DYMHT2500"],       
@@ -149,8 +152,14 @@ categories = {#"DY": ["DYMHT1200", "DYMHT200", "DYMHT2500"],
           }
 
 tags = {"":"",
-        "_tTag":"leptonicParticle==1",
-        "_WTag":"leptonicParticle==0"
+        "_BdecayCase1":"Bdecay_obs==1",
+        "_BdecayCase2":"Bdecay_obs==2",
+        "_BdecayCase3":"Bdecay_obs==3",
+        "_BdecayCase4":"Bdecay_obs==4",
+        "_BdecayAll":"Bdecay_obs>=1",
+        "_BdecayOther":"Bdecay_obs<1",
+        "_tTag":"NSS_gcJets_DeepFlavL>0",
+        "_WTag":"NSS_gcJets_DeepFlavL==0",
         "_trueLepT":"trueLeptonicT==1 && trueLeptonicW==0 && leptonicParticle==1",
         "_trueLepW":"trueLeptonicT==0 && trueLeptonicW==1 && leptonicParticle==0",
         "_falseLepT":"trueLeptonicT==0 && trueLeptonicW==1 && leptonicParticle==1",
@@ -170,8 +179,15 @@ if(getHistos):
 
     for sample in samples:
         filename = indir + samples[sample]
-        Events = RDataFrame("Events", filename).Filter("NJets_forward>0 && Bprime_mass>0").Define("Generator_weight","(float) 1.0").Define("weights","weights(Generator_weight,{},{},{})".format(lumi,xsec[sample],nRun[sample]))
+        Events = RDataFrame("Events", filename).Filter("NJets_forward>0 && Bprime_mass>0").Define("weights","weights(Generator_weight,{},{},{})".format(lumi,xsec[sample],nRun[sample]))
 
+        Events_BdecayCase1 = Events.Filter(tags["_BdecayCase1"])
+        Events_BdecayCase2 = Events.Filter(tags["_BdecayCase2"])
+        Events_BdecayCase3 = Events.Filter(tags["_BdecayCase3"])
+        Events_BdecayCase4 = Events.Filter(tags["_BdecayCase4"])
+        Events_BdecayAll = Events.Filter(tags["_BdecayAll"])
+        Events_BdecayOther = Events.Filter(tags["_BdecayOther"])
+        
         Events_tTag = Events.Filter(tags["_tTag"])
         Events_WTag = Events.Filter(tags["_WTag"])
 
@@ -188,11 +204,24 @@ if(getHistos):
             bin_hi = branches[branch][3]
             
             histo = Events.Histo1D((branch, branch, nbins, bin_lo, bin_hi), branches[branch][0], "weights")
+            histo_BdecayCase1 = Events_BdecayCase1.Histo1D((branch, branch, nbins, bin_lo, bin_hi), branches[branch][0], "weights")
+            histo_BdecayCase2 = Events_BdecayCase2.Histo1D((branch, branch, nbins, bin_lo, bin_hi), branches[branch][0], "weights")
+            histo_BdecayCase3 = Events_BdecayCase3.Histo1D((branch, branch, nbins, bin_lo, bin_hi), branches[branch][0], "weights")
+            histo_BdecayCase4 = Events_BdecayCase4.Histo1D((branch, branch, nbins, bin_lo, bin_hi), branches[branch][0], "weights")
+            histo_BdecayAll = Events_BdecayAll.Histo1D((branch, branch, nbins, bin_lo, bin_hi), branches[branch][0], "weights")
+            histo_BdecayOther = Events_BdecayOther.Histo1D((branch, branch, nbins, bin_lo, bin_hi), branches[branch][0], "weights")
             histo_tTag = Events_tTag.Histo1D((branch, branch, nbins, bin_lo, bin_hi), branches[branch][0], "weights")       
             histo_WTag = Events_WTag.Histo1D((branch, branch, nbins, bin_lo, bin_hi), branches[branch][0], "weights")
 
             histfile.cd()
             histo.Write(branch+"_"+sample+"_weighted")
+            
+            histo_BdecayCase1.Write(branch+"_"+sample+"_weighted"+"_BdecayCase1")
+            histo_BdecayCase2.Write(branch+"_"+sample+"_weighted"+"_BdecayCase2")
+            histo_BdecayCase3.Write(branch+"_"+sample+"_weighted"+"_BdecayCase3")
+            histo_BdecayCase4.Write(branch+"_"+sample+"_weighted"+"_BdecayCase4")
+            histo_BdecayAll.Write(branch+"_"+sample+"_weighted"+"_BdecayAll")
+            histo_BdecayOther.Write(branch+"_"+sample+"_weighted"+"_BdecayOther")
             histo_tTag.Write(branch+"_"+sample+"_weighted"+"_tTag")
             histo_WTag.Write(branch+"_"+sample+"_weighted"+"_WTag")
 
@@ -215,26 +244,53 @@ if(getHistos):
                 histo1 = histfile.Get(branch + "_" + sampleList[0]+"_weighted")
                 histo1_tTag = histfile.Get(branch + "_" + sampleList[0]+"_weighted_tTag")
                 histo1_WTag = histfile.Get(branch + "_" + sampleList[0]+"_weighted_WTag")
+                histo1_BdecayCase1 = histfile.Get(branch + "_" + sampleList[0]+"_weighted_BdecayCase1")
+                histo1_BdecayCase2 = histfile.Get(branch + "_" + sampleList[0]+"_weighted_BdecayCase2")
+                histo1_BdecayCase3 = histfile.Get(branch + "_" + sampleList[0]+"_weighted_BdecayCase3")
+                histo1_BdecayCase4 = histfile.Get(branch + "_" + sampleList[0]+"_weighted_BdecayCase4")
+                histo1_BdecayAll = histfile.Get(branch + "_" + sampleList[0]+"_weighted_BdecayAll")
+                histo1_BdecayOther = histfile.Get(branch + "_" + sampleList[0]+"_weighted_BdecayOther")
 
                 for i in range(1,len(sampleList)):
                     histo =  histfile.Get(branch + "_" + sampleList[i]+"_weighted")
                     histo_tTag = histfile.Get(branch + "_" + sampleList[i]+"_weighted_tTag")
                     histo_WTag = histfile.Get(branch + "_" + sampleList[i]+"_weighted_WTag")
+                    histo_BdecayCase1 = histfile.Get(branch + "_" + sampleList[i]+"_weighted_BdecayCase1")
+                    histo_BdecayCase2 = histfile.Get(branch + "_" + sampleList[i]+"_weighted_BdecayCase2")
+                    histo_BdecayCase3 = histfile.Get(branch + "_" + sampleList[i]+"_weighted_BdecayCase3")
+                    histo_BdecayCase4 = histfile.Get(branch + "_" + sampleList[i]+"_weighted_BdecayCase4")
+                    histo_BdecayAll = histfile.Get(branch + "_" + sampleList[i]+"_weighted_BdecayAll")
+                    histo_BdecayOther = histfile.Get(branch + "_" + sampleList[i]+"_weighted_BdecayOther")
 
                     histo1.Add(histo)
                     histo1_tTag.Add(histo_tTag)
                     histo1_WTag.Add(histo_WTag)
+                    histo1_BdecayCase1.Add(histo_BdecayCase1)
+                    histo1_BdecayCase2.Add(histo_BdecayCase2)
+                    histo1_BdecayCase3.Add(histo_BdecayCase3)
+                    histo1_BdecayCase4.Add(histo_BdecayCase4)
+                    histo1_BdecayAll.Add(histo_BdecayAll)
+                    histo1_BdecayOther.Add(histo_BdecayOther)
         
                 histo1.Write(branch + "_" + category+"_weighted")
                 histo1_tTag.Write(branch + "_" + category+"_weighted_tTag")
                 histo1_WTag.Write(branch + "_" + category+"_weighted_WTag")
+                histo1_BdecayCase1.Write(branch + "_" + category+"_weighted_BdecayCase1")
+                histo1_BdecayCase2.Write(branch + "_" + category+"_weighted_BdecayCase2")
+                histo1_BdecayCase3.Write(branch + "_" + category+"_weighted_BdecayCase3")
+                histo1_BdecayCase4.Write(branch + "_" + category+"_weighted_BdecayCase4")
+                histo1_BdecayAll.Write(branch + "_" + category+"_weighted_BdecayAll")
+                histo1_BdecayOther.Write(branch + "_" + category+"_weighted_BdecayOther")
 
     histfile.Close()
+end_time1 = time.time()
+print("time elapsed: ", start_time1 - end_time1)
 
 ########
 # Plot #
 ########
 print("plotting...")
+start_time2 = time.time()
 histfile = TFile.Open("bkgsig_histos.root", "READ")
 
 sig_list = ["Bp800", "Bp1000", "Bp1200", "Bp1300", "Bp1400", "Bp1500", "Bp1600", "Bp1700", "Bp1800", "Bp2000", "Bp2200"]
@@ -315,3 +371,12 @@ plot("_tTag", "_trueLepT")
 plot("_tTag", "_falseLepT")
 plot("_WTag", "_trueLepW")
 plot("_WTag", "_falseLepW")
+plot("_BdecayCase1", "_BdecayCase1")
+plot("_BdecayCase2", "_BdecayCase2")
+plot("_BdecayCase3", "_BdecayCase3")
+plot("_BdecayCase4", "_BdecayCase4")
+plot("_BdecayAll", "_BdecayAll")
+plot("_BdecayOther", "_BdecayOther")
+
+end_time2 = time.time()
+print("time elapsed: ", start_time2 - end_time2)
