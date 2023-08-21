@@ -3,13 +3,16 @@ from numpy import linspace
 from array import array
 from ROOT import *
 
+#ROOT.EnableImplicitMT()
+
 ###############
 #   Options   #
 ###############
 getHistos = True
 yLog = False
-withTags = False
-noTag = True
+withTags = True
+sigTags = False
+noTag = False
 plotSeparate = False
 
 indir = "root://cmseos.fnal.gov//store/user/xshen/BtoTW_Aug2023_2018/"
@@ -218,10 +221,10 @@ tags_general = {"_BdecayCase1":"Bdecay_obs==1",
                 "_BdecayCase2":"Bdecay_obs==2",
                 "_BdecayCase3":"Bdecay_obs==3",
                 "_BdecayCase4":"Bdecay_obs==4",
-                "_BdecayAll":"Bdecay_obs>=1",
-                "_BdecayOther":"Bdecay_obs<1",
-                "_tTag":"NSS_gcJets_DeepFlavL>0",
-                "_WTag":"NSS_gcJets_DeepFlavL==0"
+                #"_BdecayAll":"Bdecay_obs>=1",
+                #"_BdecayOther":"Bdecay_obs<1",
+                #"_tTag":"NSS_gcJets_DeepFlavL>0",
+                #"_WTag":"NSS_gcJets_DeepFlavL==0"
             }
 
 tags_signal = {"_trueLepT":"trueLeptonicT==1 && trueLeptonicW==0 && leptonicParticle==1",
@@ -272,12 +275,13 @@ if(getHistos):
     histfile = TFile.Open("bkgsig_histos.root", "RECREATE")
 
     for sample in samples:
+        print("Processing " + sample)
         filename = indir + samples[sample]
         Events = RDataFrame("Events", filename).Filter("NJets_forward>0 && Bprime_mass>0").Define("weights","weights(genWeight,{},{},{})".format(lumi,xsec[sample],nRun[sample]))
 
         if(withTags):
             CreateHistos(Events, tags_general, branches, sample)
-            if("Bp" in sample):
+            if(("Bp" in sample) and sigTags):
                 CreateHistos(Events, tags_signal, branches, sample)
 
         if(noTag):
@@ -287,7 +291,6 @@ if(getHistos):
                 bin_lo = branches[branch][2]
                 bin_hi = branches[branch][3]
             
-                print(branch, nbins, bin_lo, bin_hi)
                 histo = Events.Histo1D((branch, branch, nbins, bin_lo, bin_hi), branches[branch][0], "weights")
 
                 histfile.cd()
@@ -434,7 +437,7 @@ if(withTags):
     for tag in tags_general:
         plot(tag, tag)
 
-    if(~plotSeparate):
+    if((~plotSeparate) and sigTags):
         plot("_tTag", "_trueLepT")
         plot("_tTag", "_falseLepT")
         plot("_WTag", "_trueLepW")
