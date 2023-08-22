@@ -6,11 +6,14 @@ from ROOT import *
 ###############
 #   Options   #
 ###############
+case = "_BdecayCase1"
 getHistos = True
 
 indir = "root://cmseos.fnal.gov//store/user/xshen/BtoTW_Aug2023_2018/"
+
 outdir = os.getcwd()+'/plots_bkgsig2D/'
-if not os.path.exists(outdir): os.system('mkdir -p '+outdir)
+subdir = case[1:]+"/"
+if not os.path.exists(outdir + subdir): os.system('mkdir -p ' + outdir + subdir)
 
 ##################
 # Weighting info #
@@ -148,7 +151,8 @@ branches = {"nSignalIsoMu":["nSignalIsoMu", 10, 0, 10, ""],
             "NSS_gcJets_central":["NSS_gcJets_central", 20, 0, 20, ""],
             "NOS_gcJets_DeepFlavL":["NOS_gcJets_DeepFlavL", 15, 0, 15, ""],
             "NSS_gcJets_DeepFlavL":["NSS_gcJets_DeepFlavL", 15, 0, 15, ""],
-            "NOS_gcFatJets":["NOS_gcFatJets", 10, 0, 10, ""], # no NSS_gcFatJets yet. FIXME
+            "NOS_gcFatJets":["NOS_gcFatJets", 10, 0, 10, ""], 
+            # no NSS_gcFatJets yet. FIXME
             #"Jet_HT":["Jet_HT", 50, 0, 5000, "[GeV]"],
             #"Jet_ST":["Jet_ST", 50, 0, 5000, "[GeV]"],
             #"FatJet_pt_1":["FatJet_pt_1", 50, 0, 1500, "[GeV]"],
@@ -213,35 +217,52 @@ tags_cases = {"_BdecayCase1":"Bdecay_obs==1",
 # 2D phase space choices #
 ##########################
 var_list = ["nSignalIsoMu", "nSignalIsoEl", "nVetoIsoLep", 
-#"lepton_pt", "lepton_eta", "lepton_miniIso", "NJets_central", "NJets_DeepFlavL", "NJets_forward", "NFatJets", "NOS_gcJets_central", "NSS_gcJets_central", "NOS_gcJets_DeepFlavL", "NSS_gcJets_DeepFlavL", "NOS_gcFatJets", "dpak8_J_1", "dpak8_J_2", "dpak8_T_1", "dpak8_T_2", "dpak8_W_1", "dpak8_W_2", "dpak8_tag_1", "dpak8_tag_2", "nJ_dpak8", "nT_dpak8", "nW_dpak8", "pNet_J_1", "pNet_J_2", "pNet_T_1", "pNet_T_2", "pNet_W_1", "pNet_W_2", "pNet_tag_1", "pNet_tag_2", "nJ_pNet", "nT_pNet", "nW_pNet", "tau21_1", "tau21_2", "minDR_lep_FatJet", "ptRel_lep_FatJet", "minDR_leadAK8otherAK8", "minDR_lep_Jet", "ptRel_lep_Jet", "W_pt", "W_eta", "W_MT", "DR_W_lep", "minM_lep_Jet", "t_pt", "t_eta", "DR_W_b", "Bprime_chi2"
+"lepton_pt", "lepton_eta", "lepton_miniIso", "NJets_central", "NJets_DeepFlavL", "NJets_forward", "NFatJets", "NOS_gcJets_central", "NSS_gcJets_central", "NOS_gcJets_DeepFlavL", "NSS_gcJets_DeepFlavL", "NOS_gcFatJets", "dpak8_J_1", "dpak8_J_2", "dpak8_T_1", "dpak8_T_2", "dpak8_W_1", "dpak8_W_2", "dpak8_tag_1", "dpak8_tag_2", "nJ_dpak8", "nT_dpak8", "nW_dpak8", "pNet_J_1", "pNet_J_2", "pNet_T_1", "pNet_T_2", "pNet_W_1", "pNet_W_2", "pNet_tag_1", "pNet_tag_2", "nJ_pNet", "nT_pNet", "nW_pNet", "tau21_1", "tau21_2", "minDR_lep_FatJet", "ptRel_lep_FatJet", "minDR_leadAK8otherAK8", "minDR_lep_Jet", "ptRel_lep_Jet", "W_pt", "W_eta", "W_MT", "DR_W_lep", "minM_lep_Jet", "t_pt", "t_eta", "DR_W_b", "Bprime_chi2"
 ]
 
 combinations = list(it.combinations(var_list, 2))
 
+print(len(combinations)) #1378
+
+# split into smaller pieces
+combinations1 = combinations[:3]
+combinations2 =combinations[100:200]
+combinations3 =combinations[200:300]
+combinations4 =combinations[300:400]
+combinations5 =combinations[400:500]
+combinations6 =combinations[500:600]
+combinations7 =combinations[600:700]
+combinations8 =combinations[700:800]
+combinations9 =combinations[800:900]
+combinations10 =combinations[900:1000]
+combinations11 =combinations[1000:1100]
+combinations12 =combinations[1100:1200]
+combinations13 =combinations[1200:1300]
+combinations14 =combinations[1300:]
+
 ####################
 # Define functions #
 ####################
-def CreateHistos(Events, tags, branches, sample, tag):
-    Events_tag = Events.Filter(tags[tag])
-
+def CreateHistos(Events_tag, combinations, sample):
+    histfile.cd()
     for branch1, branch2 in combinations:
         histo_tag = Events_tag.Histo2D(("", "", branches[branch1][1], branches[branch1][2], branches[branch1][3], branches[branch2][1], branches[branch2][2], branches[branch2][3]), branch1, branch2, "weights")
+        histo_tag.Write(branch1 + "_vs_" + branch2 + "_" + sample + "_weighted" + case)
 
-        histfile.cd()
-        histo_tag.Write(branch1 + "_vs_" + branch2 + "_" + sample + "_weighted" + tag)
-        print(branch1 + "_vs_" + branch2 + "_" + sample + "_weighted" + tag)
-    
-def AddHistos(branches, sampleList, tag):
-    histo1 = histfile.Get(branch1 + "_vs_" + branch2 + "_" + sample + "_weighted" + tag)
-    for i in range(1, len(sampleList)):
-        histo =  histfile.Get(branch1 + "_vs_" + branch2 + "_" + sampleList[i] + "_weighted" + tag)
-        histo1.Add(histo)
+def AddHistos(combinations, sampleList):
+    for branch1, branch2 in combinations:
+        histo1 = histfile.Get(branch1 + "_vs_" + branch2 + "_" + sampleList[0] + "_weighted" + case)
+        histo1.Draw()
+        for i in range(1, len(sampleList)):
+            histo =  histfile.Get(branch1 + "_vs_" + branch2 + "_" + sampleList[i] + "_weighted" + case)
+            histo1.Add(histo)
         
-    histo1.Write(branch1 + "_vs_" + branch2 + "_bkg_weighted" + tag)
+        histo1.Write(branch1 + "_vs_" + branch2 + "_bkg_weighted" + case)
 
 ##################
 # Get Histograms #
 ##################
+### Two histograms of interest: _bkg and _Bp1400 ######
 bkgList = ["QCD300", "QCD500", "QCD700", "QCD1000", "QCD1500", "QCD2000", "TTToSemiLeptonic", "WJets200", "WJets400", "WJets600", "WJets800", "WJets1200", "WJets2500"]
 
 if(getHistos):
@@ -260,21 +281,61 @@ if(getHistos):
         print("Processing" + sample)
         filename = indir + samples[sample]
         Events = RDataFrame("Events", filename).Filter("NJets_forward>0 && Bprime_mass>0").Define("weights","weights(genWeight,{},{},{})".format(lumi,xsec[sample],nRun[sample]))
-        
-        CreateHistos(Events, tags_cases, branches, sample, "_BdecayCase1")
-        #CreateHistos(Events, tags_cases, branches, sample, "_BdecayCase2")
-        #CreateHistos(Events, tags_cases, branches, sample, "_BdecayCase3")
-        #CreateHistos(Events, tags_cases, branches, sample, "_BdecayCase4")
+        Events_tag = Events.Filter(tags_cases[case])
 
-    for branch1, branch2 in combinations:
-        AddHistos(branches, bkgList, "_BdecayCase1")
-        #AddHistos(branches, bkgList, "_BdecayCase2")
-        #AddHistos(branches, bkgList, "_BdecayCase3")
-        #AddHistos(branches, bkgList, "_BdecayCase4")
+        CreateHistos(Events_tag, combinations1, sample)
 
-    histfile.Close()        
+    # Add background histograms together
+    AddHistos(combinations1, bkgList)
+
+    histfile.Close()
     end_time1 = time.time()
     print("time elapsed: ", end_time1 - start_time1)
 
 
+########
+# Plot #
+########
+print("plotting...")
+start_time2 = time.time()
+histfile = TFile.Open("bkgsig_histos2D.root", "READ")    
+
+sig = "Bp1400"
+def plot2D(branch1, branch2, case):
+    subdir = case[1:]+"/"                                                                                          
+    if not os.path.exists(outdir + subdir): os.system('mkdir -p ' + outdir + subdir)
+
+    hist_sig = histfile.Get(branch1 + "_vs_" + branch2 + "_" + sig + "_weighted" + case)
+    hist_bkg = histfile.Get(branch1 + "_vs_" + branch2 + "_" + "bkg" + "_weighted" + case)
+
+    xname = branch1+branches[branch1][-1]
+    yname = branch2+branches[branch2][-1]
+
+    c_sig = TCanvas("c_sig", "c_sig", 600, 600)
+    gStyle.SetOptStat(0)
+    hist_sig.Draw("COLZ")
+    hist_sig.GetXaxis().SetTitle(xname)
+    hist_sig.GetYaxis().SetTitle(yname)
+    c_sig.Modified()
+
+    outname = outdir + subdir + branch1 + "_vs_" +branch2 + "_" + sig + ".png"
+    c_sig.SaveAs(outname)
+    c_sig.Close()
+
+    c_bkg = TCanvas("c_bkg", "c_bkg", 600, 600)
+    gStyle.SetOptStat(0)
+    hist_bkg.Draw("COLZ")
+    hist_bkg.GetXaxis().SetTitle(xname)
+    hist_bkg.GetYaxis().SetTitle(yname)
+    c_bkg.Modified()
     
+    outname = outdir + subdir + branch1 + "_vs_" +branch2 + "_bkg.png"
+    c_bkg.SaveAs(outname)
+    c_bkg.Close()
+
+
+for branch1, branch2 in combinations:
+    plot2D(branch1, branch2, case)
+
+end_time2 = time.time()
+print("time elapsed: ", end_time2 - start_time2)

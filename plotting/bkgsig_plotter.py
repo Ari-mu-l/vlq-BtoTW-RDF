@@ -22,17 +22,17 @@ if not os.path.exists(outdir): os.system('mkdir -p '+outdir)
 ##################
 # Weighting info #
 ##################
-samples = {'Bp800':'Bprime_M800_20UL18_hadd.root',
-           'Bp1000':'Bprime_M1000_20UL18_hadd.root',
-           'Bp1200':'Bprime_M1200_20UL18_hadd.root',
-           'Bp1300':'Bprime_M1300_20UL18_hadd.root',
+samples = {#'Bp800':'Bprime_M800_20UL18_hadd.root',
+           #'Bp1000':'Bprime_M1000_20UL18_hadd.root',
+           #'Bp1200':'Bprime_M1200_20UL18_hadd.root',
+           #'Bp1300':'Bprime_M1300_20UL18_hadd.root',
            'Bp1400':'Bprime_M1400_20UL18_hadd.root',
-           'Bp1500':'Bprime_M1500_20UL18_hadd.root',
-           'Bp1600':'Bprime_M1600_20UL18_hadd.root',
-           'Bp1700':'Bprime_M1700_20UL18_hadd.root',
-           'Bp1800':'Bprime_M1800_20UL18_hadd.root',
-           'Bp2000':'Bprime_M2000_20UL18_hadd.root',
-           'Bp2200':'Bprime_M2200_20UL18_hadd.root',
+           #'Bp1500':'Bprime_M1500_20UL18_hadd.root',
+           #'Bp1600':'Bprime_M1600_20UL18_hadd.root',
+           #'Bp1700':'Bprime_M1700_20UL18_hadd.root',
+           #'Bp1800':'Bprime_M1800_20UL18_hadd.root',
+           #'Bp2000':'Bprime_M2000_20UL18_hadd.root',
+           #'Bp2200':'Bprime_M2200_20UL18_hadd.root',
            #'DYMHT1200':'DYMHT12002018UL_hadd.root',
            #'DYMHT200':'DYMHT2002018UL_hadd.root',
            #'DYMHT2500':'DYMHT25002018UL_hadd.root',
@@ -141,57 +141,57 @@ xsec = {"Bp800":1.0,
 
 ###### Add branches, categories, tags here ####
 
-branches = {"nSignalIsoMu":["nSignalIsoMu", 10, 0, 10, ""],
-            "nSignalIsoEl":["nSignalIsoEl", 10, 0, 10, ""],
-            "nVetoIsoLep":["nVetoIsoLep", 10, 0, 10, ""],
-            "lepton_pt":["lepton_pt", 50, 0, 1000, "[GeV]"],
-            "lepton_eta":["lepton_eta", 40, -4, 4, ""],
-            "lepton_miniIso":["lepton_miniIso", 50, 0, 0.2, ""],
-            "NJets_central":["NJets_central", 20, 0, 20, ""],
-            "NJets_DeepFlavL":["NJets_DeepFlavL", 20, 0, 20, ""],
-            "NJets_forward":["NJets_forward", 20, 0, 20, ""],
-            "NFatJets":["NFatJets", 10, 0, 10, ""],
-            "NOS_gcJets_central":["NOS_gcJets_central", 20, 0, 20, ""],
-            "NSS_gcJets_central":["NSS_gcJets_central", 20, 0, 20, ""],
-            "NOS_gcJets_DeepFlavL":["NOS_gcJets_DeepFlavL", 15, 0, 15, ""],
-            "NSS_gcJets_DeepFlavL":["NSS_gcJets_DeepFlavL", 15, 0, 15, ""],
-            "NOS_gcFatJets":["NOS_gcFatJets", 10, 0, 10, ""], # no NSS_gcFatJets yet. FIXME
+branches = {#"nSignalIsoMu":["nSignalIsoMu", 10, 0, 10, ""],
+#            "nSignalIsoEl":["nSignalIsoEl", 10, 0, 10, ""],
+#            "nVetoIsoLep":["nVetoIsoLep", 10, 0, 10, ""],
+#            "lepton_pt":["lepton_pt", 50, 0, 1000, "[GeV]"],
+#            "lepton_eta":["lepton_eta", 40, -4, 4, ""],
+#            "lepton_miniIso":["lepton_miniIso", 50, 0, 0.2, ""],
+#            "NJets_central":["NJets_central", 20, 0, 20, ""],
+#            "NJets_DeepFlavL":["NJets_DeepFlavL", 20, 0, 20, ""],
+#            "NJets_forward":["NJets_forward", 20, 0, 20, ""],
+#            "NFatJets":["NFatJets", 10, 0, 10, ""],
+#            "NOS_gcJets_central":["NOS_gcJets_central", 20, 0, 20, ""],
+#            "NSS_gcJets_central":["NSS_gcJets_central", 20, 0, 20, ""],
+#            "NOS_gcJets_DeepFlavL":["NOS_gcJets_DeepFlavL", 15, 0, 15, ""],
+#            "NSS_gcJets_DeepFlavL":["NSS_gcJets_DeepFlavL", 15, 0, 15, ""],
+#            "NOS_gcFatJets":["NOS_gcFatJets", 10, 0, 10, ""], # no NSS_gcFatJets yet. FIXME
             #"Jet_HT":["Jet_HT", 50, 0, 5000, "[GeV]"],
             #"Jet_ST":["Jet_ST", 50, 0, 5000, "[GeV]"],
             #"FatJet_pt_1":["FatJet_pt_1", 50, 0, 1500, "[GeV]"],
             #"FatJet_pt_2":["FatJet_pt_2", 50, 0, 1500, "[GeV]"],
             #"FatJet_sdMass_1":["FatJet_sdMass_1", 50, 0, 500, "[Gev]"],
             #"FatJet_sdMass_2":["FatJet_sdMass_2", 50, 0, 500, "[Gev]"],
-            "dpak8_J_1":["dpak8_J_1", 50, 0, 1, ""],
-            "dpak8_J_2":["dpak8_J_2", 50, 0, 1, ""],
-            "dpak8_T_1":["dpak8_T_1", 50, 0, 1, ""],
-            "dpak8_T_2":["dpak8_T_2", 50, 0, 1, ""],
-            "dpak8_W_1":["dpak8_W_1", 50, 0, 1, ""],
-            "dpak8_W_2":["dpak8_W_2", 50, 0, 1, ""],
-            "dpak8_tag_1":["dpak8_tag_1", 3, 0, 3, ""],
-            "dpak8_tag_2":["dpak8_tag_1", 3, 0, 3, ""],
-            "nJ_dpak8":["nJ_dpak8", 20, 0, 20, ""],
-            "nT_dpak8":["nJ_dpak8", 15, 0, 15, ""],
-            "nW_dpak8":["nW_dpak8", 15, 0, 15, ""],
-            "pNet_J_1":["pNet_J_1", 50, 0, 1, ""],
-            "pNet_J_2":["pNet_J_2", 50, 0, 1, ""],
-            "pNet_T_1":["pNet_T_1", 50, 0, 1, ""],
-            "pNet_T_2":["pNet_T_2", 50, 0, 1, ""],
-            "pNet_W_1":["pNet_W_1", 50, 0, 1, ""],
-            "pNet_W_2":["pNet_W_2", 50, 0, 1, ""],
-            "pNet_tag_1":["pNet_tag_1", 3, 0, 3, ""],
-            "pNet_tag_2":["pNet_tag_2", 3, 0, 3, ""],
-            "nJ_pNet":["nJ_pNet", 20, 0, 20, ""],
-            "nT_pNet":["nT_pNet", 15, 0, 15, ""],
-            "nW_pNet":["nW_pNet", 15, 0, 15, ""],
-            "tau21_1":["tau21_1", 50, 0, 1, ""],
-            "tau21_2":["tau21_2", 50, 0, 1, ""],
-            "minDR_lep_FatJet":["minDR_lep_FatJet", 50, 0, 5, "[GeV]"],
-            "ptRel_lep_FatJet":["ptRel_lep_FatJet", 50, 0, 500, "[GeV]"],
-            "minDR_leadAK8otherAK8":["minDR_leadAK8otherAK8", 50, 0, 5, "[GeV]"],
-            "minDR_lep_Jet":["minDR_lep_Jet", 50, 0, 5, "[GeV]"],
-            "ptRel_lep_Jet":["ptRel_lep_Jet", 50, 0, 500, "[GeV]"],
-            "W_pt":["W_pt", 50, 0, 1000, "[GeV]"],
+#            "dpak8_J_1":["dpak8_J_1", 50, 0, 1, ""],
+#            "dpak8_J_2":["dpak8_J_2", 50, 0, 1, ""],
+#            "dpak8_T_1":["dpak8_T_1", 50, 0, 1, ""],
+#            "dpak8_T_2":["dpak8_T_2", 50, 0, 1, ""],
+#            "dpak8_W_1":["dpak8_W_1", 50, 0, 1, ""],
+#            "dpak8_W_2":["dpak8_W_2", 50, 0, 1, ""],
+#            "dpak8_tag_1":["dpak8_tag_1", 3, 0, 3, ""],
+#            "dpak8_tag_2":["dpak8_tag_1", 3, 0, 3, ""],
+#            "nJ_dpak8":["nJ_dpak8", 20, 0, 20, ""],
+#            "nT_dpak8":["nJ_dpak8", 15, 0, 15, ""],
+#            "nW_dpak8":["nW_dpak8", 15, 0, 15, ""],
+#            "pNet_J_1":["pNet_J_1", 50, 0, 1, ""],
+#            "pNet_J_2":["pNet_J_2", 50, 0, 1, ""],
+#            "pNet_T_1":["pNet_T_1", 50, 0, 1, ""],
+#            "pNet_T_2":["pNet_T_2", 50, 0, 1, ""],
+#            "pNet_W_1":["pNet_W_1", 50, 0, 1, ""],
+#            "pNet_W_2":["pNet_W_2", 50, 0, 1, ""],
+#            "pNet_tag_1":["pNet_tag_1", 3, 0, 3, ""],
+#            "pNet_tag_2":["pNet_tag_2", 3, 0, 3, ""],
+#            "nJ_pNet":["nJ_pNet", 20, 0, 20, ""],
+#            "nT_pNet":["nT_pNet", 15, 0, 15, ""],
+#            "nW_pNet":["nW_pNet", 15, 0, 15, ""],
+#            "tau21_1":["tau21_1", 50, 0, 1, ""],
+#            "tau21_2":["tau21_2", 50, 0, 1, ""],
+#            "minDR_lep_FatJet":["minDR_lep_FatJet", 50, 0, 5, "[GeV]"],
+#            "ptRel_lep_FatJet":["ptRel_lep_FatJet", 50, 0, 500, "[GeV]"],
+#            "minDR_leadAK8otherAK8":["minDR_leadAK8otherAK8", 50, 0, 5, "[GeV]"],
+#            "minDR_lep_Jet":["minDR_lep_Jet", 50, 0, 5, "[GeV]"],
+#            "ptRel_lep_Jet":["ptRel_lep_Jet", 50, 0, 500, "[GeV]"],
+#            "W_pt":["W_pt", 50, 0, 1000, "[GeV]"],
             "W_eta":["W_eta", 40, -4, 4, ""],
             "W_MT":["W_MT", 50, 0, 1500, "[GeV]"],
             "DR_W_lep":["DR_W_lep", 50, 0, 5, ""],
@@ -239,13 +239,9 @@ tags_signal = {"_trueLepT":"trueLeptonicT==1 && trueLeptonicW==0 && leptonicPart
 def CreateHistos(Events, tags, branches, sample):
     for tag in tags:
         Events_tag = Events.Filter(tags[tag])
-        for branch in branches:
-            # set histogram bins
-            nbins = branches[branch][1]
-            bin_lo = branches[branch][2]
-            bin_hi = branches[branch][3]
 
-            histo_tag = Events_tag.Histo1D((branch, branch, nbins, bin_lo, bin_hi), branches[branch][0], "weights")
+        for branch in branches:
+            histo_tag = Events_tag.Histo1D((branch, branch, branches[branch][1], branches[branch][2], branches[branch][3]), branches[branch][0], "weights")
 
             histfile.cd()
             histo_tag.Write(branch + "_" + sample + "_weighted" + tag)
@@ -286,12 +282,7 @@ if(getHistos):
 
         if(noTag):
             for branch in branches:
-                # set histogram bins
-                nbins = branches[branch][1]
-                bin_lo = branches[branch][2]
-                bin_hi = branches[branch][3]
-            
-                histo = Events.Histo1D((branch, branch, nbins, bin_lo, bin_hi), branches[branch][0], "weights")
+                histo = Events.Histo1D((branch, branch, branches[branch][1], branches[branch][2], branches[branch][3]), branches[branch][0], "weights")
 
                 histfile.cd()
                 histo.Write(branch+"_"+sample+"_weighted")
@@ -316,7 +307,10 @@ print("plotting...")
 start_time2 = time.time()
 histfile = TFile.Open("bkgsig_histos.root", "READ")
 
-sig_list = ["Bp800", "Bp1000", "Bp1200", "Bp1300", "Bp1400", "Bp1500", "Bp1600", "Bp1700", "Bp1800", "Bp2000", "Bp2200"]
+sig_list = [#"Bp800", "Bp1000", "Bp1200", "Bp1300", 
+"Bp1400", 
+#"Bp1500", "Bp1600", "Bp1700", "Bp1800", "Bp2000", "Bp2200"
+]
 bkg_list = ["QCD", "WJets", "TTToSemiLeptonic"]
 
 colors_sig = {"Bp800":kRed,
@@ -345,6 +339,7 @@ def plot(bkgTag, sigTag):
         histo_stack_bkg = THStack(branch, branch)
 
         for sig in sig_list:
+            print(branch + "_" + sig + "_weighted" + sigTag)
             histo = histfile.Get(branch + "_" + sig + "_weighted" + sigTag) 
         
             histo.SetLineColor(colors_sig[sig])
