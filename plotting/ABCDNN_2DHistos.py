@@ -8,9 +8,9 @@ from ROOT import *
 ###############
 case = "_BdecayCase1"
 getHistos = True
+getPlots = True
 
 indir = "root://cmseos.fnal.gov//store/user/xshen/BtoTW_Aug2023_2018/"
-
 outdir = os.getcwd()+'/plots_bkgsig2D/'
 subdir = case[1:]+"/"
 if not os.path.exists(outdir + subdir): os.system('mkdir -p ' + outdir + subdir)
@@ -225,20 +225,33 @@ combinations = list(it.combinations(var_list, 2))
 print(len(combinations)) #1378
 
 # split into smaller pieces
-combinations1 = combinations[:3]
-combinations2 =combinations[100:200]
-combinations3 =combinations[200:300]
-combinations4 =combinations[300:400]
-combinations5 =combinations[400:500]
-combinations6 =combinations[500:600]
-combinations7 =combinations[600:700]
-combinations8 =combinations[700:800]
-combinations9 =combinations[800:900]
-combinations10 =combinations[900:1000]
-combinations11 =combinations[1000:1100]
-combinations12 =combinations[1100:1200]
-combinations13 =combinations[1200:1300]
-combinations14 =combinations[1300:]
+combinations1 = combinations[:2]
+combinations2 =combinations[2:4]
+combinations3 =combinations[4:6]
+combinations4 =combinations[150:200]
+combinations5 =combinations[200:250]
+combinations6 =combinations[250:300]
+combinations7 =combinations[300:350]
+combinations8 =combinations[350:400]
+combinations9 =combinations[400:450]
+combinations10 =combinations[450:500]
+combinations11 =combinations[500:550]
+combinations12 =combinations[550:600]
+combinations13 =combinations[600:650]
+combinations14 =combinations[650:700]
+combinations15 =combinations[700:750]
+combinations16 =combinations[750:800]
+combinations17 =combinations[800:850]
+combinations18 =combinations[850:900]
+combinations19 =combinations[900:950]
+combinations20 =combinations[950:1000]
+combinations21 =combinations[1000:1050]
+combinations22 =combinations[1050:1100]
+combinations23 =combinations[1100:1150]
+combinations24 =combinations[1150:1200]
+combinations25 =combinations[1200:1250]
+combinations26 =combinations[1250:1300]
+combinations27 =combinations[1300:]
 
 ####################
 # Define functions #
@@ -259,6 +272,41 @@ def AddHistos(combinations, sampleList):
         
         histo1.Write(branch1 + "_vs_" + branch2 + "_bkg_weighted" + case)
 
+def CreateFromSamples(sample):
+    print("Processing" + sample)
+    filename = indir + samples[sample]
+    Events = RDataFrame("Events", filename).Filter("NJets_forward>0 && Bprime_mass>0").Define("weights","weights(genWeight,{},{},{})".format(lumi,xsec[sample],nRun[sample]))
+    Events_tag = Events.Filter(tags_cases[case])
+
+    # Create histogram from all possible 2d phases
+    CreateHistos(Events_tag, combinations1, sample)
+    CreateHistos(Events_tag, combinations2, sample)
+    CreateHistos(Events_tag, combinations3, sample)
+    #CreateHistos(Events_tag, combinations4, sample)
+    #CreateHistos(Events_tag, combinations5, sample)
+    #CreateHistos(Events_tag, combinations6, sample)
+    #CreateHistos(Events_tag, combinations7, sample)
+    #CreateHistos(Events_tag, combinations8, sample)
+    #CreateHistos(Events_tag, combinations9, sample)
+    #CreateHistos(Events_tag, combinations10, sample)
+    #CreateHistos(Events_tag, combinations11, sample)
+    #CreateHistos(Events_tag, combinations12, sample)
+    #CreateHistos(Events_tag, combinations13, sample)
+    #CreateHistos(Events_tag, combinations14, sample)
+    #CreateHistos(Events_tag, combinations15, sample)
+    #CreateHistos(Events_tag, combinations16, sample)
+    #CreateHistos(Events_tag, combinations17, sample)
+    #CreateHistos(Events_tag, combinations18, sample)
+    #CreateHistos(Events_tag, combinations19, sample)
+    #CreateHistos(Events_tag, combinations20, sample)
+    #CreateHistos(Events_tag, combinations21, sample)
+    #CreateHistos(Events_tag, combinations22, sample)
+    #CreateHistos(Events_tag, combinations23, sample)
+    #CreateHistos(Events_tag, combinations24, sample)
+    #CreateHistos(Events_tag, combinations25, sample)
+    #CreateHistos(Events_tag, combinations26, sample)
+    #CreateHistos(Events_tag, combinations27, sample)
+
 ##################
 # Get Histograms #
 ##################
@@ -277,16 +325,50 @@ if(getHistos):
     print("Preparing bkgsig_histos2D.root...")
     histfile = TFile.Open("bkgsig_histos2D.root", "RECREATE")
 
-    for sample in samples:
-        print("Processing" + sample)
-        filename = indir + samples[sample]
-        Events = RDataFrame("Events", filename).Filter("NJets_forward>0 && Bprime_mass>0").Define("weights","weights(genWeight,{},{},{})".format(lumi,xsec[sample],nRun[sample]))
-        Events_tag = Events.Filter(tags_cases[case])
-
-        CreateHistos(Events_tag, combinations1, sample)
+    # Create histograms from samples
+    CreateFromSamples('Bp1400')
+    CreateFromSamples('QCD300')
+    CreateFromSamples('QCD500')
+    CreateFromSamples('QCD700')
+    CreateFromSamples('QCD1000')
+    CreateFromSamples('QCD1500')
+    CreateFromSamples('QCD2000')
+    CreateFromSamples('TTToSemiLeptonic')
+    CreateFromSamples('WJets200')
+    CreateFromSamples('WJets400')
+    CreateFromSamples('WJets600')
+    CreateFromSamples('WJets800')
+    CreateFromSamples('WJets1200')
+    CreateFromSamples('WJets2500')
 
     # Add background histograms together
     AddHistos(combinations1, bkgList)
+    AddHistos(combinations2, bkgList)
+    AddHistos(combinations3, bkgList)
+    #AddHistos(combinations4, bkgList)
+    #AddHistos(combinations5, bkgList)
+    #AddHistos(combinations6, bkgList)
+    #AddHistos(combinations7, bkgList)
+    #AddHistos(combinations8, bkgList)
+    #AddHistos(combinations9, bkgList)
+    #AddHistos(combinations10, bkgList)
+    #AddHistos(combinations11, bkgList)
+    #AddHistos(combinations12, bkgList)
+    #AddHistos(combinations13, bkgList)
+    #AddHistos(combinations14, bkgList)
+    #AddHistos(combinations15, bkgList)
+    #AddHistos(combinations16, bkgList)
+    #AddHistos(combinations17, bkgList)
+    #AddHistos(combinations18, bkgList)
+    #AddHistos(combinations19, bkgList)
+    #AddHistos(combinations20, bkgList)
+    #AddHistos(combinations21, bkgList)
+    #AddHistos(combinations22, bkgList)
+    #AddHistos(combinations23, bkgList)
+    #AddHistos(combinations24, bkgList)
+    #AddHistos(combinations25, bkgList)
+    #AddHistos(combinations26, bkgList)
+    #AddHistos(combinations27, bkgList)
 
     histfile.Close()
     end_time1 = time.time()
@@ -301,41 +383,101 @@ start_time2 = time.time()
 histfile = TFile.Open("bkgsig_histos2D.root", "READ")    
 
 sig = "Bp1400"
-def plot2D(branch1, branch2, case):
-    subdir = case[1:]+"/"                                                                                          
-    if not os.path.exists(outdir + subdir): os.system('mkdir -p ' + outdir + subdir)
+def plot2D(combinations):
+    for branch1, branch2 in combinations:
 
-    hist_sig = histfile.Get(branch1 + "_vs_" + branch2 + "_" + sig + "_weighted" + case)
-    hist_bkg = histfile.Get(branch1 + "_vs_" + branch2 + "_" + "bkg" + "_weighted" + case)
+        # get base histograms
+        hist_sig = histfile.Get(branch1 + "_vs_" + branch2 + "_" + sig + "_weighted" + case)
+        hist_bkg = histfile.Get(branch1 + "_vs_" + branch2 + "_" + "bkg" + "_weighted" + case)
+        hist_bkg_copy = hist_bkg.Clone()
+        hist_purity = hist_sig.Clone()
+        hist_sensitivity = hist_sig.Clone()
 
-    xname = branch1+branches[branch1][-1]
-    yname = branch2+branches[branch2][-1]
+        # set branch names
+        xname = branch1+branches[branch1][-1]
+        yname = branch2+branches[branch2][-1]
 
-    c_sig = TCanvas("c_sig", "c_sig", 600, 600)
-    gStyle.SetOptStat(0)
-    hist_sig.Draw("COLZ")
-    hist_sig.GetXaxis().SetTitle(xname)
-    hist_sig.GetYaxis().SetTitle(yname)
-    c_sig.Modified()
+        # set up canvas
+        c1 = TCanvas("c1", "c1", 600, 600)
+        gStyle.SetOptStat(0)
+        c1.Divide(2,2)
 
-    outname = outdir + subdir + branch1 + "_vs_" +branch2 + "_" + sig + ".png"
-    c_sig.SaveAs(outname)
-    c_sig.Close()
+        # plot signal
+        c1.cd(1)
+        c1_1.SetLeftMargin(0.12)
+        hist_sig.GetXaxis().SetTitle(xname)
+        hist_sig.GetYaxis().SetTitle(yname)
+        hist_sig.SetTitle("Signal")
+        hist_sig.Draw("COLZ")
 
-    c_bkg = TCanvas("c_bkg", "c_bkg", 600, 600)
-    gStyle.SetOptStat(0)
-    hist_bkg.Draw("COLZ")
-    hist_bkg.GetXaxis().SetTitle(xname)
-    hist_bkg.GetYaxis().SetTitle(yname)
-    c_bkg.Modified()
-    
-    outname = outdir + subdir + branch1 + "_vs_" +branch2 + "_bkg.png"
-    c_bkg.SaveAs(outname)
-    c_bkg.Close()
+        # plot backgrounds
+        c1.cd(2)
+        c1_2.SetLeftMargin(0.12)
+        hist_bkg.GetXaxis().SetTitle(xname)
+        hist_bkg.GetYaxis().SetTitle(yname)
+        hist_bkg.SetTitle("Backgrounds")
+        hist_bkg.Draw("COLZ")
 
+        # plot purity
+        hist_purity.Divide(hist_bkg)
+        c1.cd(3)
+        c1_3.SetLeftMargin(0.12)
+        hist_purity.GetXaxis().SetTitle(xname)
+        hist_purity.GetYaxis().SetTitle(yname)
+        hist_purity.SetTitle("Signal Purity S/B")
+        hist_purity.Draw("COLZ")
 
-for branch1, branch2 in combinations:
-    plot2D(branch1, branch2, case)
+        # plot signal sensitivity
+        for bin in range(hist_bkg_copy.GetNcells()):
+            BinContent = hist_bkg_copy.GetBinContent(bin) + hist_sig.GetBinContent(bin)
+            if(BinContent>=0):
+                hist_bkg_copy.SetBinContent(bin, sqrt(BinContent))
+            else:
+                hist_bkg_copy.SetBinContent(bin, 0)
+        hist_sensitivity.Divide(hist_bkg_copy)
+
+        c1.cd(4)
+        c1_4.SetLeftMargin(0.12)
+        hist_sensitivity.GetXaxis().SetTitle(xname)
+        hist_sensitivity.GetYaxis().SetTitle(yname)
+        hist_sensitivity.SetTitle("Signal Sensitivity S/sqrt(S+B)")
+        hist_sensitivity.Draw("COLZ")
+
+        c1.Modified()
+        c1.Update()
+
+        outname = outdir + subdir + branch1 + "_vs_" +branch2 + ".png"
+        c1.SaveAs(outname)
+
+if(getPlots):
+    plot2D(combinations1)
+    plot2D(combinations2)
+    plot2D(combinations3)
+    #plot2D(combinations4)
+    #plot2D(combinations5)
+    #plot2D(combinations6)
+    #plot2D(combinations7)
+    #plot2D(combinations8)
+    #plot2D(combinations9)
+    #plot2D(combinations10)
+    #plot2D(combinations11)
+    #plot2D(combinations12)
+    #plot2D(combinations13)
+    #plot2D(combinations14)
+    #plot2D(combinations15)
+    #plot2D(combinations16)
+    #plot2D(combinations17)
+    #plot2D(combinations18)
+    #plot2D(combinations19)
+    #plot2D(combinations20)
+    #plot2D(combinations21)
+    #plot2D(combinations22)
+    #plot2D(combinations23)
+    #plot2D(combinations24)
+    #plot2D(combinations25)
+    #plot2D(combinations26)
+    #plot2D(combinations27)
+
 
 end_time2 = time.time()
 print("time elapsed: ", end_time2 - start_time2)
