@@ -15,13 +15,13 @@ from math import sqrt
 #   Options   #
 ###############
 case = "_BdecayCase1"
-getHistos = False
+getHistos = True
 branch1 = "W_pt"
-branch2 = "t_pt"
+branch2 = "DR_W_lep"
 
 indir = "root://cmseos.fnal.gov//store/user/xshen/BtoTW_Aug2023_2018/"
 
-outdir = os.getcwd()+'/plots_ABCDnn/'
+outdir = os.getcwd()+'/plots_ABCDnnRegion/'
 subdir = case[1:]+"/"
 if not os.path.exists(outdir + subdir): os.system('mkdir -p ' + outdir + subdir)
 
@@ -246,7 +246,7 @@ def AddHistos(sampleList):
 # Get Histograms #
 ##################
 ### Two histograms of interest: _bkg and _Bp1400 ######
-histfile_name =  "ABCDnn_Regions_{}_vs_{}_{}.root".format(branch1, branch2, case)
+histfile_name =  "ABCDnn_Regions_{}_vs_{}{}.root".format(branch1, branch2, case)
 
 bkgList = ["QCD300", "QCD500", "QCD700", "QCD1000", "QCD1500", "QCD2000", "TTToSemiLeptonic", "WJets200", "WJets400", "WJets600", "WJets800", "WJets1200", "WJets2500"]
 
@@ -292,72 +292,64 @@ def plot2D(case):
 
     hist_sig = histfile.Get(branch1 + "_vs_" + branch2 + "_" + sig + "_weighted" + case)
     hist_bkg = histfile.Get(branch1 + "_vs_" + branch2 + "_" + "bkg" + "_weighted" + case)
-    hist_significance = hist_sig.Clone()
+    hist_bkg_copy = hist_bkg.Clone()
+    hist_purity = hist_sig.Clone()
+    hist_sensitivity = hist_sig.Clone()
 
     xname = branch1+branches[branch1][-1]
     yname = branch2+branches[branch2][-1]
 
-    c1 = TCanvas("c1", "c1", 1200, 400)
+    c1 = TCanvas("c1", "c1", 600, 600)
     gStyle.SetOptStat(0)
-    c1.Divide(3,1)
-    
+    c1.Divide(2,2)
+
+    # plot signal
     c1.cd(1)
+    c1_1.SetLeftMargin(0.12)
+    hist_sig.GetXaxis().SetTitle(xname)
+    hist_sig.GetYaxis().SetTitle(yname)
+    hist_sig.SetTitle("Signal")
     hist_sig.Draw("COLZ")
 
+    # plot background
     c1.cd(2)
+    c1_2.SetLeftMargin(0.12)
+    hist_bkg.GetXaxis().SetTitle(xname)
+    hist_bkg.GetYaxis().SetTitle(yname)
+    hist_bkg.SetTitle("Backgrounds")
     hist_bkg.Draw("COLZ")
     
-    #c1.cd(3)
-    
-    # Draw signal histogram
-#    c_sig = TCanvas("c_sig", "c_sig", 600, 600)
-#    gStyle.SetOptStat(0)
-#    hist_sig.Draw("COLZ")
-#    hist_sig.GetXaxis().SetTitle(xname)
-#    hist_sig.GetYaxis().SetTitle(yname)
-#    c_sig.Modified()
+    # plot purity
+    hist_purity.Divide(hist_bkg)
 
-#    outname = outdir + subdir + branch1 + "_vs_" +branch2 + "_" + sig + ".png"
-#    c_sig.SaveAs(outname)
-#    c_sig.Close()
-
-    # Draw background histogram
-#    c_bkg = TCanvas("c_bkg", "c_bkg", 600, 600)
-#    gStyle.SetOptStat(0)
-#    hist_bkg.Draw("COLZ")
-#    hist_bkg.GetXaxis().SetTitle(xname)
-#    hist_bkg.GetYaxis().SetTitle(yname)
-#    c_bkg.Modified()
-    
-#    outname = outdir + subdir + branch1 + "_vs_" +branch2 + "_bkg.png"
-#    c_bkg.SaveAs(outname)
-#    c_bkg.Close()
-
-    # Draw significance histogram
-#    c_significance = TCanvas("c_significance", "c_significance", 600, 600)
-#    gStyle.SetOptStat(0)
-    
-    for bin in range(hist_bkg.GetNcells()):
-        BinContent = hist_bkg.GetBinContent(bin) + hist_sig.GetBinContent(bin)
-        if(BinContent>=0):
-            hist_bkg.SetBinContent(bin, sqrt(BinContent))
-        else:
-            print(bin, BinContent)
-    hist_significance.Divide(hist_bkg)
-    
     c1.cd(3)
-    hist_significance.Draw("COLZ")
-    
-#    outname = outdir + subdir + branch1 + "_vs_" +branch2 + "_significance.png"
-#    c_significance.SaveAs(outname)
-#    c_significance.Close()
+    c1_3.SetLeftMargin(0.12)
+    hist_purity.GetXaxis().SetTitle(xname)
+    hist_purity.GetYaxis().SetTitle(yname)
+    hist_purity.SetTitle("Signal Purity S/B")
+    hist_purity.Draw("COLZ")
 
-    hist_sig.GetXaxis().SetTitle(xname)
-    hist_sig.GetXaxis().SetTitle(yname)
-    hist_bkg.GetXaxis().SetTitle(xname)
-    hist_bkg.GetXaxis().SetTitle(yname)
-    hist_significance.GetXaxis().SetTitle(xname)
-    hist_significance.GetXaxis().SetTitle(yname)
+    # plot signal sensitivity
+    for bin in range(hist_bkg_copy.GetNcells()):
+        BinContent = hist_bkg_copy.GetBinContent(bin) + hist_sig.GetBinContent(bin)
+        if(BinContent>=0):
+            hist_bkg_copy.SetBinContent(bin, sqrt(BinContent))
+        else:
+            hist_bkg_copy.SetBinContent(bin, 0)
+    hist_sensitivity.Divide(hist_bkg_copy)
+
+    c1.cd(4)
+    c1_4.SetLeftMargin(0.12)
+    hist_sensitivity.GetXaxis().SetTitle(xname)
+    hist_sensitivity.GetYaxis().SetTitle(yname)
+    hist_sensitivity.SetTitle("Signal Sensitivity S/sqrt(S+B)")
+    hist_sensitivity.Draw("COLZ")
+
+    c1.Modified()
+    c1.Update()
+
+    outname = outdir + subdir + branch1 + "_vs_" +branch2 + ".png"
+    c1.SaveAs(outname)
 
 plot2D(case)
 
