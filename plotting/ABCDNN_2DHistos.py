@@ -1,13 +1,14 @@
 import os, sys, time
 import itertools as it
 import numpy as np
+from math import sqrt
 from ROOT import *
 
 ###############
 #   Options   #
 ###############
 case = "_BdecayCase1"
-getHistos = True
+getHistos = False
 getPlots = True
 
 indir = "root://cmseos.fnal.gov//store/user/xshen/BtoTW_Aug2023_2018/"
@@ -225,9 +226,9 @@ combinations = list(it.combinations(var_list, 2))
 print(len(combinations)) #1378
 
 # split into smaller pieces
-combinations1 = combinations[:2]
-combinations2 =combinations[2:4]
-combinations3 =combinations[4:6]
+combinations1 = combinations[:50]
+combinations2 =combinations[50:100]
+combinations3 =combinations[100:150]
 combinations4 =combinations[150:200]
 combinations5 =combinations[200:250]
 combinations6 =combinations[250:300]
@@ -385,8 +386,8 @@ histfile = TFile.Open("bkgsig_histos2D.root", "READ")
 sig = "Bp1400"
 def plot2D(combinations):
     for branch1, branch2 in combinations:
-
         # get base histograms
+        histfile.cd()
         hist_sig = histfile.Get(branch1 + "_vs_" + branch2 + "_" + sig + "_weighted" + case)
         hist_bkg = histfile.Get(branch1 + "_vs_" + branch2 + "_" + "bkg" + "_weighted" + case)
         hist_bkg_copy = hist_bkg.Clone()
@@ -397,14 +398,8 @@ def plot2D(combinations):
         xname = branch1+branches[branch1][-1]
         yname = branch2+branches[branch2][-1]
 
-        # set up canvas
-        c1 = TCanvas("c1", "c1", 600, 600)
-        gStyle.SetOptStat(0)
-        c1.Divide(2,2)
-
         # plot signal
         c1.cd(1)
-        c1_1.SetLeftMargin(0.12)
         hist_sig.GetXaxis().SetTitle(xname)
         hist_sig.GetYaxis().SetTitle(yname)
         hist_sig.SetTitle("Signal")
@@ -412,7 +407,6 @@ def plot2D(combinations):
 
         # plot backgrounds
         c1.cd(2)
-        c1_2.SetLeftMargin(0.12)
         hist_bkg.GetXaxis().SetTitle(xname)
         hist_bkg.GetYaxis().SetTitle(yname)
         hist_bkg.SetTitle("Backgrounds")
@@ -421,7 +415,6 @@ def plot2D(combinations):
         # plot purity
         hist_purity.Divide(hist_bkg)
         c1.cd(3)
-        c1_3.SetLeftMargin(0.12)
         hist_purity.GetXaxis().SetTitle(xname)
         hist_purity.GetYaxis().SetTitle(yname)
         hist_purity.SetTitle("Signal Purity S/B")
@@ -437,7 +430,6 @@ def plot2D(combinations):
         hist_sensitivity.Divide(hist_bkg_copy)
 
         c1.cd(4)
-        c1_4.SetLeftMargin(0.12)
         hist_sensitivity.GetXaxis().SetTitle(xname)
         hist_sensitivity.GetYaxis().SetTitle(yname)
         hist_sensitivity.SetTitle("Signal Sensitivity S/sqrt(S+B)")
@@ -450,6 +442,19 @@ def plot2D(combinations):
         c1.SaveAs(outname)
 
 if(getPlots):
+    # set up canvas     
+    c1 = TCanvas("c1", "c1", 600, 600)
+    gStyle.SetOptStat(0)
+    c1.Divide(2,2)
+    c1_1.SetLeftMargin(0.12)
+    c1_2.SetLeftMargin(0.12)
+    c1_3.SetLeftMargin(0.12)
+    c1_4.SetLeftMargin(0.12)
+    c1_1.SetRightMargin(0.15)
+    c1_2.SetRightMargin(0.15)
+    c1_3.SetRightMargin(0.15)
+    c1_4.SetRightMargin(0.15)
+
     plot2D(combinations1)
     plot2D(combinations2)
     plot2D(combinations3)
