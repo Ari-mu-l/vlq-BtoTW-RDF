@@ -252,11 +252,11 @@ branches = {#"nSignalIsoMu":["nSignalIsoMu", 10, 0, 10, ""],
             "pt_reco": ["Bprime_pt", 50, 0, 4000, "[GeV]"]
 }
 
-categories = {#"DY": ["DYMHT1200", "DYMHT200", "DYMHT2500"],       
-              "QCD": ["QCD1000", "QCD1500", "QCD2000", #"QCD200", 
-                      "QCD300", "QCD500", "QCD700"],
+categories = {"DY": ["DYMHT1200", "DYMHT200", "DYMHT2500", "DYMHT400", "DYMHT600", "DYMHT800"],
+              "QCD": ["QCD1000", "QCD1500", "QCD2000", "QCD300", "QCD500", "QCD700"], # excluded QCD200. no events
+              "ST": ["STs", "STt", "STtb", "STtW", "STtWb"],
+              "TT":["TTHB", "TTHnonB", "TTMT1000", "TTMT700", "TTTo2L2Nu", "TTToHadronic", "TTToSemiLeptonic", "TTWl", "TTWq", "TTZM10", "TTZM1to10"],
               "WJets":["WJets1200", "WJets200", "WJets2500", "WJets400", "WJets600", "WJets800"],
-              #"TTbar":["TTToSemiLeptonic"],
           }
 
 tags_general = {"_BdecayCase1":"Bdecay_obs==1",
