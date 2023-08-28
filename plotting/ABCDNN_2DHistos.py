@@ -8,7 +8,7 @@ from ROOT import *
 #   Options   #
 ###############
 case = "_BdecayCase1"
-getHistos = False
+getHistos = True
 getPlots = True
 
 indir = "root://cmseos.fnal.gov//store/user/xshen/BtoTW_Aug2023_2018/"
@@ -138,12 +138,13 @@ xsec = {"Bp800":1.0,
 
 ###### Add branches, categories, tags here ####
 
-branches = {"nSignalIsoMu":["nSignalIsoMu", 10, 0, 10, ""],
-            "nSignalIsoEl":["nSignalIsoEl", 10, 0, 10, ""],
-            "nVetoIsoLep":["nVetoIsoLep", 10, 0, 10, ""],
-            "lepton_pt":["lepton_pt", 50, 0, 1000, "[GeV]"],
-            "lepton_eta":["lepton_eta", 40, -4, 4, ""],
-            "lepton_miniIso":["lepton_miniIso", 50, 0, 0.2, ""],
+branches = {
+#    "nSignalIsoMu":["nSignalIsoMu", 10, 0, 10, ""],
+#            "nSignalIsoEl":["nSignalIsoEl", 10, 0, 10, ""],
+#            "nVetoIsoLep":["nVetoIsoLep", 10, 0, 10, ""],
+#            "lepton_pt":["lepton_pt", 50, 0, 1000, "[GeV]"],
+#            "lepton_eta":["lepton_eta", 40, -4, 4, ""],
+#            "lepton_miniIso":["lepton_miniIso", 50, 0, 0.2, ""],
             "NJets_central":["NJets_central", 20, 0, 20, ""],
             "NJets_DeepFlavL":["NJets_DeepFlavL", 20, 0, 20, ""],
             "NJets_forward":["NJets_forward", 20, 0, 20, ""],
@@ -160,45 +161,45 @@ branches = {"nSignalIsoMu":["nSignalIsoMu", 10, 0, 10, ""],
             #"FatJet_pt_2":["FatJet_pt_2", 50, 0, 1500, "[GeV]"],
             #"FatJet_sdMass_1":["FatJet_sdMass_1", 50, 0, 500, "[Gev]"],
             #"FatJet_sdMass_2":["FatJet_sdMass_2", 50, 0, 500, "[Gev]"],
-            "dpak8_J_1":["dpak8_J_1", 50, 0, 1, ""],
-            "dpak8_J_2":["dpak8_J_2", 50, 0, 1, ""],
-            "dpak8_T_1":["dpak8_T_1", 50, 0, 1, ""],
-            "dpak8_T_2":["dpak8_T_2", 50, 0, 1, ""],
-            "dpak8_W_1":["dpak8_W_1", 50, 0, 1, ""],
-            "dpak8_W_2":["dpak8_W_2", 50, 0, 1, ""],
-            "dpak8_tag_1":["dpak8_tag_1", 3, 0, 3, ""],
-            "dpak8_tag_2":["dpak8_tag_1", 3, 0, 3, ""],
-            "nJ_dpak8":["nJ_dpak8", 20, 0, 20, ""],
-            "nT_dpak8":["nJ_dpak8", 15, 0, 15, ""],
-            "nW_dpak8":["nW_dpak8", 15, 0, 15, ""],
-            "pNet_J_1":["pNet_J_1", 50, 0, 1, ""],
-            "pNet_J_2":["pNet_J_2", 50, 0, 1, ""],
-            "pNet_T_1":["pNet_T_1", 50, 0, 1, ""],
-            "pNet_T_2":["pNet_T_2", 50, 0, 1, ""],
-            "pNet_W_1":["pNet_W_1", 50, 0, 1, ""],
-            "pNet_W_2":["pNet_W_2", 50, 0, 1, ""],
+#            "dpak8_J_1":["dpak8_J_1", 50, 0, 1, ""],
+#            "dpak8_J_2":["dpak8_J_2", 50, 0, 1, ""],
+#            "dpak8_T_1":["dpak8_T_1", 50, 0, 1, ""],
+#            "dpak8_T_2":["dpak8_T_2", 50, 0, 1, ""],
+#            "dpak8_W_1":["dpak8_W_1", 50, 0, 1, ""],
+#            "dpak8_W_2":["dpak8_W_2", 50, 0, 1, ""],
+#            "dpak8_tag_1":["dpak8_tag_1", 3, 0, 3, ""],
+#            "dpak8_tag_2":["dpak8_tag_1", 3, 0, 3, ""],
+#            "nJ_dpak8":["nJ_dpak8", 20, 0, 20, ""],
+#            "nT_dpak8":["nJ_dpak8", 15, 0, 15, ""],
+#            "nW_dpak8":["nW_dpak8", 15, 0, 15, ""],
+            "pNet_J_1":["pNet_J_1", 30, 0, 1, ""],
+            "pNet_J_2":["pNet_J_2", 30, 0, 1, ""],
+            "pNet_T_1":["pNet_T_1", 30, 0, 1, ""],
+            "pNet_T_2":["pNet_T_2", 30, 0, 1, ""],
+            "pNet_W_1":["pNet_W_1", 30, 0, 1, ""],
+            "pNet_W_2":["pNet_W_2", 30, 0, 1, ""],
             "pNet_tag_1":["pNet_tag_1", 3, 0, 3, ""],
             "pNet_tag_2":["pNet_tag_2", 3, 0, 3, ""],
             "nJ_pNet":["nJ_pNet", 20, 0, 20, ""],
             "nT_pNet":["nT_pNet", 15, 0, 15, ""],
             "nW_pNet":["nW_pNet", 15, 0, 15, ""],
-            "tau21_1":["tau21_1", 50, 0, 1, ""],
-            "tau21_2":["tau21_2", 50, 0, 1, ""],
-            "minDR_lep_FatJet":["minDR_lep_FatJet", 50, 0, 5, "[GeV]"],
-            "ptRel_lep_FatJet":["ptRel_lep_FatJet", 50, 0, 500, "[GeV]"],
-            "minDR_leadAK8otherAK8":["minDR_leadAK8otherAK8", 50, 0, 5, "[GeV]"],
-            "minDR_lep_Jet":["minDR_lep_Jet", 50, 0, 5, "[GeV]"],
-            "ptRel_lep_Jet":["ptRel_lep_Jet", 50, 0, 500, "[GeV]"],
-            "W_pt":["W_pt", 50, 0, 1000, "[GeV]"],
-            "W_eta":["W_eta", 40, -4, 4, ""],
-            "W_MT":["W_MT", 50, 0, 1500, "[GeV]"],
-            "DR_W_lep":["DR_W_lep", 50, 0, 5, ""],
-            "minM_lep_Jet":["minM_lep_Jet", 50, 0, 1000, "[GeV]"],
-            "t_pt":["t_pt", 50, 0, 1000, "[GeV]"],
-            "t_eta":["t_eta", 50, -4, 4, ""],
-            "DR_W_b":["DR_W_b", 50, 0, 7, ""],
-            "Bprime_chi2":["Bprime_chi2", 50, 0, 1000, ""],
-            "Bdecay_obs":["Bdecay_obs", 4, 0, 4, ""]
+            "tau21_1":["tau21_1", 30, 0, 1, ""],
+            "tau21_2":["tau21_2", 30, 0, 1, ""],
+#            "minDR_lep_FatJet":["minDR_lep_FatJet", 50, 0, 5, "[GeV]"],
+#            "ptRel_lep_FatJet":["ptRel_lep_FatJet", 50, 0, 500, "[GeV]"],
+#            "minDR_leadAK8otherAK8":["minDR_leadAK8otherAK8", 50, 0, 5, "[GeV]"],
+#            "minDR_lep_Jet":["minDR_lep_Jet", 50, 0, 5, "[GeV]"],
+#            "ptRel_lep_Jet":["ptRel_lep_Jet", 50, 0, 500, "[GeV]"],
+            "W_pt":["W_pt", 30, 0, 1000, "[GeV]"],
+#            "W_eta":["W_eta", 40, -4, 4, ""],
+            "W_MT":["W_MT", 30, 0, 1500, "[GeV]"],
+            "DR_W_lep":["DR_W_lep", 30, 0, 5, ""],
+            "minM_lep_Jet":["minM_lep_Jet", 30, 0, 1000, "[GeV]"],
+            "t_pt":["t_pt", 30, 0, 1000, "[GeV]"],
+#            "t_eta":["t_eta", 50, -4, 4, ""],
+            "DR_W_b":["DR_W_b", 30, 0, 7, ""],
+            "Bprime_chi2":["Bprime_chi2", 30, 0, 1000, ""],
+#            "Bdecay_obs":["Bdecay_obs", 4, 0, 4, ""]
 }
 
 categories = {#"DY": ["DYMHT1200", "DYMHT200", "DYMHT2500"],       
@@ -217,42 +218,33 @@ tags_cases = {"_BdecayCase1":"Bdecay_obs==1",
 ##########################
 # 2D phase space choices #
 ##########################
-var_list = ["nSignalIsoMu", "nSignalIsoEl", "nVetoIsoLep", 
-"lepton_pt", "lepton_eta", "lepton_miniIso", "NJets_central", "NJets_DeepFlavL", "NJets_forward", "NFatJets", "NOS_gcJets_central", "NSS_gcJets_central", "NOS_gcJets_DeepFlavL", "NSS_gcJets_DeepFlavL", "NOS_gcFatJets", "dpak8_J_1", "dpak8_J_2", "dpak8_T_1", "dpak8_T_2", "dpak8_W_1", "dpak8_W_2", "dpak8_tag_1", "dpak8_tag_2", "nJ_dpak8", "nT_dpak8", "nW_dpak8", "pNet_J_1", "pNet_J_2", "pNet_T_1", "pNet_T_2", "pNet_W_1", "pNet_W_2", "pNet_tag_1", "pNet_tag_2", "nJ_pNet", "nT_pNet", "nW_pNet", "tau21_1", "tau21_2", "minDR_lep_FatJet", "ptRel_lep_FatJet", "minDR_leadAK8otherAK8", "minDR_lep_Jet", "ptRel_lep_Jet", "W_pt", "W_eta", "W_MT", "DR_W_lep", "minM_lep_Jet", "t_pt", "t_eta", "DR_W_b", "Bprime_chi2"
-]
+var_list = [#"nSignalIsoMu", "nSignalIsoEl", "nVetoIsoLep", "lepton_pt", "lepton_eta", "lepton_miniIso", 
+"NJets_central", "NJets_DeepFlavL", "NJets_forward", "NFatJets", "NOS_gcJets_central", "NSS_gcJets_central", "NOS_gcJets_DeepFlavL", "NSS_gcJets_DeepFlavL", "NOS_gcFatJets", 
+#"dpak8_J_1", "dpak8_J_2", "dpak8_T_1", "dpak8_T_2", "dpak8_W_1", "dpak8_W_2", "dpak8_tag_1", "dpak8_tag_2", "nJ_dpak8", "nT_dpak8", "nW_dpak8", 
+"pNet_J_1", "pNet_J_2", "pNet_T_1", "pNet_T_2", "pNet_W_1", "pNet_W_2", "pNet_tag_1", "pNet_tag_2", "nJ_pNet", "nT_pNet", "nW_pNet", "tau21_1", "tau21_2", 
+#"minDR_lep_FatJet", "ptRel_lep_FatJet", "minDR_leadAK8otherAK8", "minDR_lep_Jet", "ptRel_lep_Jet", 
+"W_pt", 
+#"W_eta", 
+"W_MT", "DR_W_lep", "minM_lep_Jet", "t_pt", 
+#"t_eta", 
+"DR_W_b", "Bprime_chi2"
+] # FIXME
 
 combinations = list(it.combinations(var_list, 2))
 
-print(len(combinations)) #1378
+print(len(combinations)) #406
 
 # split into smaller pieces
-combinations1 = combinations[:50]
-combinations2 =combinations[50:100]
-combinations3 =combinations[100:150]
-combinations4 =combinations[150:200]
-combinations5 =combinations[200:250]
-combinations6 =combinations[250:300]
-combinations7 =combinations[300:350]
-combinations8 =combinations[350:400]
-combinations9 =combinations[400:450]
-combinations10 =combinations[450:500]
-combinations11 =combinations[500:550]
-combinations12 =combinations[550:600]
-combinations13 =combinations[600:650]
-combinations14 =combinations[650:700]
-combinations15 =combinations[700:750]
-combinations16 =combinations[750:800]
-combinations17 =combinations[800:850]
-combinations18 =combinations[850:900]
-combinations19 =combinations[900:950]
-combinations20 =combinations[950:1000]
-combinations21 =combinations[1000:1050]
-combinations22 =combinations[1050:1100]
-combinations23 =combinations[1100:1150]
-combinations24 =combinations[1150:1200]
-combinations25 =combinations[1200:1250]
-combinations26 =combinations[1250:1300]
-combinations27 =combinations[1300:]
+combinations1 = combinations[:40]
+combinations2 =combinations[40:80]
+combinations3 =combinations[80:120]
+combinations4 =combinations[120:160]
+combinations5 =combinations[160:200]
+combinations6 =combinations[200:240]
+combinations7 =combinations[240:280]
+combinations8 =combinations[280:320]
+combinations9 =combinations[320:360]
+combinations10 =combinations[360:]
 
 ####################
 # Define functions #
@@ -266,7 +258,6 @@ def CreateHistos(Events_tag, combinations, sample):
 def AddHistos(combinations, sampleList):
     for branch1, branch2 in combinations:
         histo1 = histfile.Get(branch1 + "_vs_" + branch2 + "_" + sampleList[0] + "_weighted" + case)
-        histo1.Draw()
         for i in range(1, len(sampleList)):
             histo =  histfile.Get(branch1 + "_vs_" + branch2 + "_" + sampleList[i] + "_weighted" + case)
             histo1.Add(histo)
@@ -276,37 +267,20 @@ def AddHistos(combinations, sampleList):
 def CreateFromSamples(sample):
     print("Processing" + sample)
     filename = indir + samples[sample]
-    Events = RDataFrame("Events", filename).Filter("NJets_forward>0 && Bprime_mass>0").Define("weights","weights(genWeight,{},{},{})".format(lumi,xsec[sample],nRun[sample]))
+    Events = RDataFrame("Events", filename).Define("weights","weights(genWeight,{},{},{})".format(lumi,xsec[sample],nRun[sample]))
     Events_tag = Events.Filter(tags_cases[case])
 
     # Create histogram from all possible 2d phases
-    CreateHistos(Events_tag, combinations1, sample)
-    CreateHistos(Events_tag, combinations2, sample)
-    CreateHistos(Events_tag, combinations3, sample)
+    #CreateHistos(Events_tag, combinations1, sample)
+    #CreateHistos(Events_tag, combinations2, sample)
+    #CreateHistos(Events_tag, combinations3, sample)
     #CreateHistos(Events_tag, combinations4, sample)
     #CreateHistos(Events_tag, combinations5, sample)
-    #CreateHistos(Events_tag, combinations6, sample)
-    #CreateHistos(Events_tag, combinations7, sample)
-    #CreateHistos(Events_tag, combinations8, sample)
-    #CreateHistos(Events_tag, combinations9, sample)
-    #CreateHistos(Events_tag, combinations10, sample)
-    #CreateHistos(Events_tag, combinations11, sample)
-    #CreateHistos(Events_tag, combinations12, sample)
-    #CreateHistos(Events_tag, combinations13, sample)
-    #CreateHistos(Events_tag, combinations14, sample)
-    #CreateHistos(Events_tag, combinations15, sample)
-    #CreateHistos(Events_tag, combinations16, sample)
-    #CreateHistos(Events_tag, combinations17, sample)
-    #CreateHistos(Events_tag, combinations18, sample)
-    #CreateHistos(Events_tag, combinations19, sample)
-    #CreateHistos(Events_tag, combinations20, sample)
-    #CreateHistos(Events_tag, combinations21, sample)
-    #CreateHistos(Events_tag, combinations22, sample)
-    #CreateHistos(Events_tag, combinations23, sample)
-    #CreateHistos(Events_tag, combinations24, sample)
-    #CreateHistos(Events_tag, combinations25, sample)
-    #CreateHistos(Events_tag, combinations26, sample)
-    #CreateHistos(Events_tag, combinations27, sample)
+    CreateHistos(Events_tag, combinations6, sample)
+    CreateHistos(Events_tag, combinations7, sample)
+    CreateHistos(Events_tag, combinations8, sample)
+    CreateHistos(Events_tag, combinations9, sample)
+    CreateHistos(Events_tag, combinations10, sample)
 
 ##################
 # Get Histograms #
@@ -343,33 +317,16 @@ if(getHistos):
     CreateFromSamples('WJets2500')
 
     # Add background histograms together
-    AddHistos(combinations1, bkgList)
-    AddHistos(combinations2, bkgList)
-    AddHistos(combinations3, bkgList)
+    #AddHistos(combinations1, bkgList)
+    #AddHistos(combinations2, bkgList)
+    #AddHistos(combinations3, bkgList)
     #AddHistos(combinations4, bkgList)
     #AddHistos(combinations5, bkgList)
-    #AddHistos(combinations6, bkgList)
-    #AddHistos(combinations7, bkgList)
-    #AddHistos(combinations8, bkgList)
-    #AddHistos(combinations9, bkgList)
-    #AddHistos(combinations10, bkgList)
-    #AddHistos(combinations11, bkgList)
-    #AddHistos(combinations12, bkgList)
-    #AddHistos(combinations13, bkgList)
-    #AddHistos(combinations14, bkgList)
-    #AddHistos(combinations15, bkgList)
-    #AddHistos(combinations16, bkgList)
-    #AddHistos(combinations17, bkgList)
-    #AddHistos(combinations18, bkgList)
-    #AddHistos(combinations19, bkgList)
-    #AddHistos(combinations20, bkgList)
-    #AddHistos(combinations21, bkgList)
-    #AddHistos(combinations22, bkgList)
-    #AddHistos(combinations23, bkgList)
-    #AddHistos(combinations24, bkgList)
-    #AddHistos(combinations25, bkgList)
-    #AddHistos(combinations26, bkgList)
-    #AddHistos(combinations27, bkgList)
+    AddHistos(combinations6, bkgList)
+    AddHistos(combinations7, bkgList)
+    AddHistos(combinations8, bkgList)
+    AddHistos(combinations9, bkgList)
+    AddHistos(combinations10, bkgList)
 
     histfile.Close()
     end_time1 = time.time()
@@ -455,33 +412,16 @@ if(getPlots):
     c1_3.SetRightMargin(0.15)
     c1_4.SetRightMargin(0.15)
 
-    plot2D(combinations1)
-    plot2D(combinations2)
-    plot2D(combinations3)
+    #plot2D(combinations1)
+    #plot2D(combinations2)
+    #plot2D(combinations3)
     #plot2D(combinations4)
     #plot2D(combinations5)
-    #plot2D(combinations6)
-    #plot2D(combinations7)
-    #plot2D(combinations8)
-    #plot2D(combinations9)
-    #plot2D(combinations10)
-    #plot2D(combinations11)
-    #plot2D(combinations12)
-    #plot2D(combinations13)
-    #plot2D(combinations14)
-    #plot2D(combinations15)
-    #plot2D(combinations16)
-    #plot2D(combinations17)
-    #plot2D(combinations18)
-    #plot2D(combinations19)
-    #plot2D(combinations20)
-    #plot2D(combinations21)
-    #plot2D(combinations22)
-    #plot2D(combinations23)
-    #plot2D(combinations24)
-    #plot2D(combinations25)
-    #plot2D(combinations26)
-    #plot2D(combinations27)
+    plot2D(combinations6)
+    plot2D(combinations7)
+    plot2D(combinations8)
+    plot2D(combinations9)
+    plot2D(combinations10)
 
 
 end_time2 = time.time()
