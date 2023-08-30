@@ -7,7 +7,7 @@ from ROOT import *
 ###############
 #   Options   #
 ###############
-case = "_BdecayCase1"
+case = "_BdecayCase2"
 getHistos = True
 getPlots = True
 
@@ -228,7 +228,7 @@ var_list = [#"nSignalIsoMu", "nSignalIsoEl", "nVetoIsoLep", "lepton_pt", "lepton
 "W_MT", "DR_W_lep", "minM_lep_Jet", "t_pt", 
 #"t_eta", 
 "DR_W_b", "Bprime_chi2"
-] # FIXME
+]
 
 combinations = list(it.combinations(var_list, 2))
 

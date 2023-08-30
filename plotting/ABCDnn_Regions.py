@@ -15,9 +15,12 @@ from math import sqrt
 #   Options   #
 ###############
 case = "_BdecayCase1"
-getHistos = True
-branch1 = "W_pt"
-branch2 = "DR_W_lep"
+getHistos = False
+getRegions = True
+branch1 = "tau21_1"
+branch2 = "W_pt"
+
+sig_list = ["Bp800", "Bp1400", "Bp2200"]
 
 indir = "root://cmseos.fnal.gov//store/user/xshen/BtoTW_Aug2023_2018/"
 
@@ -28,7 +31,7 @@ if not os.path.exists(outdir + subdir): os.system('mkdir -p ' + outdir + subdir)
 ##################
 # Weighting info #
 ##################
-samples = {#'Bp800':'Bprime_M800_20UL18_hadd.root',
+samples = {'Bp800':'Bprime_M800_20UL18_hadd.root',
            #'Bp1000':'Bprime_M1000_20UL18_hadd.root',
            #'Bp1200':'Bprime_M1200_20UL18_hadd.root',
            #'Bp1300':'Bprime_M1300_20UL18_hadd.root',
@@ -38,7 +41,7 @@ samples = {#'Bp800':'Bprime_M800_20UL18_hadd.root',
            #'Bp1700':'Bprime_M1700_20UL18_hadd.root',
            #'Bp1800':'Bprime_M1800_20UL18_hadd.root',
            #'Bp2000':'Bprime_M2000_20UL18_hadd.root',
-           #'Bp2200':'Bprime_M2200_20UL18_hadd.root',
+           'Bp2200':'Bprime_M2200_20UL18_hadd.root',
            #'DYMHT1200':'DYMHT12002018UL_hadd.root',
            #'DYMHT200':'DYMHT2002018UL_hadd.root',
            #'DYMHT2500':'DYMHT25002018UL_hadd.root',
@@ -151,7 +154,7 @@ branches = {"nSignalIsoMu":["nSignalIsoMu", 10, 0, 10, ""],
             "nSignalIsoEl":["nSignalIsoEl", 10, 0, 10, ""],
             "nVetoIsoLep":["nVetoIsoLep", 10, 0, 10, ""],
             "lepton_pt":["lepton_pt", 50, 0, 1000, "[GeV]"],
-            "lepton_eta":["lepton_eta", 40, -4, 4, ""],
+            "lepton_eta":["lepton_eta", 25, -3, 3, ""],
             "lepton_miniIso":["lepton_miniIso", 50, 0, 0.2, ""],
             "NJets_central":["NJets_central", 20, 0, 20, ""],
             "NJets_DeepFlavL":["NJets_DeepFlavL", 20, 0, 20, ""],
@@ -191,19 +194,19 @@ branches = {"nSignalIsoMu":["nSignalIsoMu", 10, 0, 10, ""],
             "nJ_pNet":["nJ_pNet", 20, 0, 20, ""],
             "nT_pNet":["nT_pNet", 15, 0, 15, ""],
             "nW_pNet":["nW_pNet", 15, 0, 15, ""],
-            "tau21_1":["tau21_1", 50, 0, 1, ""],
-            "tau21_2":["tau21_2", 50, 0, 1, ""],
-            "minDR_lep_FatJet":["minDR_lep_FatJet", 50, 0, 5, "[GeV]"],
-            "ptRel_lep_FatJet":["ptRel_lep_FatJet", 50, 0, 500, "[GeV]"],
-            "minDR_leadAK8otherAK8":["minDR_leadAK8otherAK8", 50, 0, 5, "[GeV]"],
-            "minDR_lep_Jet":["minDR_lep_Jet", 50, 0, 5, "[GeV]"],
-            "ptRel_lep_Jet":["ptRel_lep_Jet", 50, 0, 500, "[GeV]"],
-            "W_pt":["W_pt", 50, 0, 1000, "[GeV]"],
-            "W_eta":["W_eta", 40, -4, 4, ""],
-            "W_MT":["W_MT", 50, 0, 1500, "[GeV]"],
-            "DR_W_lep":["DR_W_lep", 50, 0, 5, ""],
-            "minM_lep_Jet":["minM_lep_Jet", 50, 0, 1000, "[GeV]"],
-            "t_pt":["t_pt", 50, 0, 1000, "[GeV]"],
+            "tau21_1":["tau21_1", 30, 0, 1, ""],
+            "tau21_2":["tau21_2", 30, 0, 1, ""],
+            "minDR_lep_FatJet":["minDR_lep_FatJet", 30, 0, 5, "[GeV]"],
+            "ptRel_lep_FatJet":["ptRel_lep_FatJet", 30, 0, 500, "[GeV]"],
+            "minDR_leadAK8otherAK8":["minDR_leadAK8otherAK8", 30, 0, 5, "[GeV]"],
+            "minDR_lep_Jet":["minDR_lep_Jet", 30, 0, 5, "[GeV]"],
+            "ptRel_lep_Jet":["ptRel_lep_Jet", 30, 0, 500, "[GeV]"],
+            "W_pt":["W_pt", 30, 0, 1000, "[GeV]"],
+            "W_eta":["W_eta", 30, -4, 4, ""],
+            "W_MT":["W_MT", 30, 0, 1500, "[GeV]"],
+            "DR_W_lep":["DR_W_lep", 30, 0, 5, ""],
+            "minM_lep_Jet":["minM_lep_Jet", 30, 0, 1000, "[GeV]"],
+            "t_pt":["t_pt", 25, 0, 1000, "[GeV]"],
             "t_eta":["t_eta", 50, -4, 4, ""],
             "DR_W_b":["DR_W_b", 50, 0, 7, ""],
             "Bprime_chi2":["Bprime_chi2", 50, 0, 1000, ""],
@@ -234,7 +237,6 @@ def CreateHistos(Events_tag, sample):
 
 def AddHistos(sampleList):
     histo1 = histfile.Get(branch1 + "_vs_" + branch2 + "_" + sampleList[0] + "_weighted" + case)
-    histo1.Draw()
     for i in range(1, len(sampleList)):
         histo =  histfile.Get(branch1 + "_vs_" + branch2 + "_" + sampleList[i] + "_weighted" + case)
         histo1.Add(histo)
@@ -265,7 +267,7 @@ if(getHistos):
     for sample in samples:
         print("Processing" + sample)
         filename = indir + samples[sample]
-        Events = RDataFrame("Events", filename).Filter("NJets_forward>0 && Bprime_mass>0").Define("weights","weights(genWeight,{},{},{})".format(lumi,xsec[sample],nRun[sample]))
+        Events = RDataFrame("Events", filename).Define("weights","weights(genWeight,{},{},{})".format(lumi,xsec[sample],nRun[sample]))
         Events_tag = Events.Filter(tags_cases[case])
 
         CreateHistos(Events_tag, sample)
@@ -285,10 +287,30 @@ print("plotting...")
 start_time2 = time.time()
 histfile = TFile.Open(histfile_name, "READ")    
 
-sig = "Bp1400"
-def plot2D(case):
-    subdir = case[1:]+"/"                                                                                          
-    if not os.path.exists(outdir + subdir): os.system('mkdir -p ' + outdir + subdir)
+#sig = "Bp2500"
+
+def plotRegions(getRegions, line1, line2, line3):
+    if(getRegions):
+        line1.Draw()
+        line2.Draw()
+        line3.Draw()        
+        
+def integrateRegions(hist_sig, hist_bkg, region, xmin, xmax, ymin, ymax, text, c1):
+    integral_sig = hist_sig.Integral(hist_sig.GetXaxis().FindBin(xmin), hist_sig.GetXaxis().FindBin(xmax), hist_sig.GetYaxis().FindBin(ymin), hist_sig.GetYaxis().FindBin(ymax))
+    integral_bkg = hist_bkg.Integral(hist_bkg.GetXaxis().FindBin(xmin), hist_bkg.GetXaxis().FindBin(xmax), hist_bkg.GetYaxis().FindBin(ymin), hist_bkg.GetYaxis().FindBin(ymax))
+
+    c1.cd(1)
+    
+    content = "#color[2]{"+region+"}"
+    text.DrawLatex((xmin+xmax)/2, (ymin+ymax)/2, content)
+
+    c1.cd(2)
+    text.DrawLatex((xmin+xmax)/2, (ymin+ymax)/2, content)
+
+    print("Region {}: Signal {}, Background {}".format(region, integral_sig, integral_bkg))
+    return integral_sig, integral_bkg
+
+def plot2D(case, sig):
 
     hist_sig = histfile.Get(branch1 + "_vs_" + branch2 + "_" + sig + "_weighted" + case)
     hist_bkg = histfile.Get(branch1 + "_vs_" + branch2 + "_" + "bkg" + "_weighted" + case)
@@ -296,38 +318,57 @@ def plot2D(case):
     hist_purity = hist_sig.Clone()
     hist_sensitivity = hist_sig.Clone()
 
-    xname = branch1+branches[branch1][-1]
-    yname = branch2+branches[branch2][-1]
+    #xname = branch1+branches[branch1][-1]
+    #yname = branch2+branches[branch2][-1]
 
-    c1 = TCanvas("c1", "c1", 600, 600)
-    gStyle.SetOptStat(0)
-    c1.Divide(2,2)
+    #c1 = TCanvas("c1", "c1", 600, 600)
+    #gStyle.SetOptStat(0)
+    #c1.Divide(2,2)
 
+   # if(getRegions):
+   #     line1 = TLine(0, 400, 1, 400)
+   #     line2 = TLine(0, 200, 1, 200)
+   #     line3 = TLine(0.7, 0, 0.7, 1000)
+
+   #     line1.SetLineColor(kRed)
+   #     line2.SetLineColor(kRed)
+   #     line3.SetLineColor(kRed)
+
+   #     line1.SetLineWidth(2)
+   #     line2.SetLineWidth(2)
+   #     line3.SetLineWidth(2)
+        
     # plot signal
     c1.cd(1)
-    c1_1.SetLeftMargin(0.12)
+    #c1_1.SetLeftMargin(0.12)
+    #c1_1.SetRightMargin(0.12)
     hist_sig.GetXaxis().SetTitle(xname)
     hist_sig.GetYaxis().SetTitle(yname)
     hist_sig.SetTitle("Signal")
     hist_sig.Draw("COLZ")
+    plotRegions(getRegions, line1, line2, line3)
 
     # plot background
     c1.cd(2)
-    c1_2.SetLeftMargin(0.12)
+    #c1_2.SetLeftMargin(0.12)
+    #c1_2.SetRightMargin(0.12)
     hist_bkg.GetXaxis().SetTitle(xname)
     hist_bkg.GetYaxis().SetTitle(yname)
     hist_bkg.SetTitle("Backgrounds")
     hist_bkg.Draw("COLZ")
-    
+    plotRegions(getRegions, line1, line2, line3)
+
     # plot purity
     hist_purity.Divide(hist_bkg)
-
+    
     c1.cd(3)
-    c1_3.SetLeftMargin(0.12)
+    #c1_3.SetLeftMargin(0.12)
+    #c1_3.SetRightMargin(0.12)
     hist_purity.GetXaxis().SetTitle(xname)
     hist_purity.GetYaxis().SetTitle(yname)
     hist_purity.SetTitle("Signal Purity S/B")
     hist_purity.Draw("COLZ")
+    plotRegions(getRegions, line1, line2, line3)
 
     # plot signal sensitivity
     for bin in range(hist_bkg_copy.GetNcells()):
@@ -339,19 +380,80 @@ def plot2D(case):
     hist_sensitivity.Divide(hist_bkg_copy)
 
     c1.cd(4)
-    c1_4.SetLeftMargin(0.12)
+    #c1_4.SetLeftMargin(0.12)
+    #c1_4.SetRightMargin(0.12)
     hist_sensitivity.GetXaxis().SetTitle(xname)
     hist_sensitivity.GetYaxis().SetTitle(yname)
     hist_sensitivity.SetTitle("Signal Sensitivity S/sqrt(S+B)")
     hist_sensitivity.Draw("COLZ")
+    plotRegions(getRegions, line1, line2, line3)
+
+    # define region ranges
+    Dx_min, Cx_min, Yx_min = 0, 0, 0
+    Dx_max, Cx_max, Yx_max = 0.7, 0.7, 0.7 # probably should be changed to inf
+    Bx_min, Ax_min, Xx_min = 0.7, 0.7, 0.7
+    Bx_max, Ax_max, Xx_max = 1, 1, 1
+    
+    Dy_min, By_min = 400, 400
+    Dy_max, By_max = 1000, 1000
+    Ay_min, Cy_min = 200, 200
+    Ay_max, Cy_max = 400, 400
+    Xy_min, Yy_min = 0, 0
+    Xy_max, Yy_max = 200, 200
+
+    # integrate histograms over regions
+    text = TLatex()
+
+    integrateRegions(hist_sig, hist_bkg, "A", Ax_min, Ax_max, Ay_min, Ay_max, text, c1)
+    integrateRegions(hist_sig, hist_bkg, "B", Bx_min, Bx_max, By_min, By_max, text, c1)
+    integrateRegions(hist_sig, hist_bkg, "C", Cx_min, Cx_max, Cy_min, Cy_max, text, c1)
+    integrateRegions(hist_sig, hist_bkg, "D", Dx_min, Dx_max, Dy_min, Dy_max, text, c1)
+    integrateRegions(hist_sig, hist_bkg, "X", Xx_min, Xx_max, Xy_min, Xy_max, text, c1)
+    integrateRegions(hist_sig, hist_bkg, "Y", Yx_min, Yx_max, Yy_min, Yy_max, text, c1)
 
     c1.Modified()
     c1.Update()
 
-    outname = outdir + subdir + branch1 + "_vs_" +branch2 + ".png"
+    outname = outdir + subdir + branch1 + "_vs_" +branch2 + "_" + sig + ".png"
     c1.SaveAs(outname)
 
-plot2D(case)
+
+# Set up canvas
+
+c1 = TCanvas("c1", "c1", 600, 600)
+gStyle.SetOptStat(0)
+c1.Divide(2,2)
+
+c1_1.SetLeftMargin(0.12)
+c1_1.SetRightMargin(0.12)
+c1_2.SetLeftMargin(0.12)
+c1_2.SetRightMargin(0.12)
+c1_3.SetLeftMargin(0.12)
+c1_3.SetRightMargin(0.12)
+c1_4.SetLeftMargin(0.12)
+c1_4.SetRightMargin(0.12)
+
+# Define lines
+if(getRegions):
+    line1 = TLine(0, 400, 1, 400)
+    line2 = TLine(0, 200, 1, 200)
+    line3 = TLine(0.7, 0, 0.7, 1000)
+
+    line1.SetLineColor(kRed)
+    line2.SetLineColor(kRed)
+    line3.SetLineColor(kRed)
+
+    line1.SetLineWidth(2)
+    line2.SetLineWidth(2)
+    line3.SetLineWidth(2)
+
+
+
+xname = branch1+branches[branch1][-1]
+yname = branch2+branches[branch2][-1]
+    
+for sig in sig_list:
+    plot2D(case, sig)
 
 end_time2 = time.time()
 print("time elapsed: ", end_time2 - start_time2)
