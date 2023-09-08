@@ -15,12 +15,12 @@ from math import sqrt
 #   Options   #
 ###############
 case = "_BdecayCase1"
-getHistos = False
+getHistos = True
 getRegions = True
-branch1 = "tau21_1"
-branch2 = "W_pt"
+branch1 = "NJets_forward"
+branch2 = "NJets_DeepFlavL"
 
-sig_list = ["Bp800", "Bp1400", "Bp2200"]
+sigList = ["Bp800", "Bp1400", "Bp2200"]
 
 indir = "root://cmseos.fnal.gov//store/user/xshen/BtoTW_Aug2023_2018/"
 
@@ -153,12 +153,12 @@ xsec = {"Bp800":1.0,
 branches = {"nSignalIsoMu":["nSignalIsoMu", 10, 0, 10, ""],
             "nSignalIsoEl":["nSignalIsoEl", 10, 0, 10, ""],
             "nVetoIsoLep":["nVetoIsoLep", 10, 0, 10, ""],
-            "lepton_pt":["lepton_pt", 50, 0, 1000, "[GeV]"],
+            "lepton_pt":["lepton_pt", 30, 0, 1000, "[GeV]"],
             "lepton_eta":["lepton_eta", 25, -3, 3, ""],
-            "lepton_miniIso":["lepton_miniIso", 50, 0, 0.2, ""],
+            "lepton_miniIso":["lepton_miniIso", 30, 0, 0.2, ""],
             "NJets_central":["NJets_central", 20, 0, 20, ""],
-            "NJets_DeepFlavL":["NJets_DeepFlavL", 20, 0, 20, ""],
-            "NJets_forward":["NJets_forward", 20, 0, 20, ""],
+            "NJets_DeepFlavL":["NJets_DeepFlavL", 8, 0, 8, ""],
+            "NJets_forward":["NJets_forward", 8, 0, 8, ""],
             "NFatJets":["NFatJets", 10, 0, 10, ""],
             "NOS_gcJets_central":["NOS_gcJets_central", 20, 0, 20, ""],
             "NSS_gcJets_central":["NSS_gcJets_central", 20, 0, 20, ""],
@@ -172,23 +172,23 @@ branches = {"nSignalIsoMu":["nSignalIsoMu", 10, 0, 10, ""],
             #"FatJet_pt_2":["FatJet_pt_2", 50, 0, 1500, "[GeV]"],
             #"FatJet_sdMass_1":["FatJet_sdMass_1", 50, 0, 500, "[Gev]"],
             #"FatJet_sdMass_2":["FatJet_sdMass_2", 50, 0, 500, "[Gev]"],
-            "dpak8_J_1":["dpak8_J_1", 50, 0, 1, ""],
-            "dpak8_J_2":["dpak8_J_2", 50, 0, 1, ""],
-            "dpak8_T_1":["dpak8_T_1", 50, 0, 1, ""],
-            "dpak8_T_2":["dpak8_T_2", 50, 0, 1, ""],
-            "dpak8_W_1":["dpak8_W_1", 50, 0, 1, ""],
-            "dpak8_W_2":["dpak8_W_2", 50, 0, 1, ""],
+            "dpak8_J_1":["dpak8_J_1", 30, 0, 1, ""],
+            "dpak8_J_2":["dpak8_J_2", 30, 0, 1, ""],
+            "dpak8_T_1":["dpak8_T_1", 30, 0, 1, ""],
+            "dpak8_T_2":["dpak8_T_2", 30, 0, 1, ""],
+            "dpak8_W_1":["dpak8_W_1", 30, 0, 1, ""],
+            "dpak8_W_2":["dpak8_W_2", 30, 0, 1, ""],
             "dpak8_tag_1":["dpak8_tag_1", 3, 0, 3, ""],
             "dpak8_tag_2":["dpak8_tag_1", 3, 0, 3, ""],
             "nJ_dpak8":["nJ_dpak8", 20, 0, 20, ""],
             "nT_dpak8":["nJ_dpak8", 15, 0, 15, ""],
             "nW_dpak8":["nW_dpak8", 15, 0, 15, ""],
-            "pNet_J_1":["pNet_J_1", 50, 0, 1, ""],
-            "pNet_J_2":["pNet_J_2", 50, 0, 1, ""],
-            "pNet_T_1":["pNet_T_1", 50, 0, 1, ""],
-            "pNet_T_2":["pNet_T_2", 50, 0, 1, ""],
-            "pNet_W_1":["pNet_W_1", 50, 0, 1, ""],
-            "pNet_W_2":["pNet_W_2", 50, 0, 1, ""],
+            "pNet_J_1":["pNet_J_1", 30, 0, 1, ""],
+            "pNet_J_2":["pNet_J_2", 30, 0, 1, ""],
+            "pNet_T_1":["pNet_T_1", 30, 0, 1, ""],
+            "pNet_T_2":["pNet_T_2", 30, 0, 1, ""],
+            "pNet_W_1":["pNet_W_1", 30, 0, 1, ""],
+            "pNet_W_2":["pNet_W_2", 30, 0, 1, ""],
             "pNet_tag_1":["pNet_tag_1", 3, 0, 3, ""],
             "pNet_tag_2":["pNet_tag_2", 3, 0, 3, ""],
             "nJ_pNet":["nJ_pNet", 20, 0, 20, ""],
@@ -205,12 +205,12 @@ branches = {"nSignalIsoMu":["nSignalIsoMu", 10, 0, 10, ""],
             "W_eta":["W_eta", 30, -4, 4, ""],
             "W_MT":["W_MT", 30, 0, 1500, "[GeV]"],
             "DR_W_lep":["DR_W_lep", 30, 0, 5, ""],
-            "minM_lep_Jet":["minM_lep_Jet", 30, 0, 1000, "[GeV]"],
+            "minM_lep_Jet":["minM_lep_Jet", 20, 0, 1000, "[GeV]"],
             "t_pt":["t_pt", 25, 0, 1000, "[GeV]"],
-            "t_eta":["t_eta", 50, -4, 4, ""],
-            "DR_W_b":["DR_W_b", 50, 0, 7, ""],
-            "Bprime_chi2":["Bprime_chi2", 50, 0, 1000, ""],
-            "Bdecay_obs":["Bdecay_obs", 4, 0, 4, ""]
+            "t_eta":["t_eta", 30, -4, 4, ""],
+            "DR_W_b":["DR_W_b", 30, 0, 7, ""],
+            "Bprime_chi2":["Bprime_chi2", 30, 0, 1000, ""],
+            "Bdecay_obs":["Bdecay_obs", 4, 1, 5, ""]
 }
 
 categories = {#"DY": ["DYMHT1200", "DYMHT200", "DYMHT2500"],       
@@ -223,7 +223,7 @@ categories = {#"DY": ["DYMHT1200", "DYMHT200", "DYMHT2500"],
 tags_cases = {"_BdecayCase1":"Bdecay_obs==1",
         "_BdecayCase2":"Bdecay_obs==2",
         "_BdecayCase3":"Bdecay_obs==3",
-        "_BdecayCase4":"Bdecay_obs==4",
+        "_BdecayCase4":"Bdecay_obs==4"
     }
 
 ####################
@@ -287,13 +287,13 @@ print("plotting...")
 start_time2 = time.time()
 histfile = TFile.Open(histfile_name, "READ")    
 
-#sig = "Bp2500"
-
-def plotRegions(getRegions, line1, line2, line3):
-    if(getRegions):
-        line1.Draw()
-        line2.Draw()
-        line3.Draw()        
+def plotRegions(line1, line2, line3, line4, line5, line6):
+    line1.Draw()
+    line2.Draw()
+    line3.Draw()
+    line4.Draw()
+    line5.Draw()
+    line6.Draw()
         
 def integrateRegions(hist_sig, hist_bkg, region, xmin, xmax, ymin, ymax, text, c1):
     integral_sig = hist_sig.Integral(hist_sig.GetXaxis().FindBin(xmin), hist_sig.GetXaxis().FindBin(xmax), hist_sig.GetYaxis().FindBin(ymin), hist_sig.GetYaxis().FindBin(ymax))
@@ -307,7 +307,7 @@ def integrateRegions(hist_sig, hist_bkg, region, xmin, xmax, ymin, ymax, text, c
     c1.cd(2)
     text.DrawLatex((xmin+xmax)/2, (ymin+ymax)/2, content)
 
-    print("Region {}: Signal {}, Background {}".format(region, integral_sig, integral_bkg))
+    print("Region {}: Signal {}, Background {}".format(region, int(integral_sig), int(integral_bkg)))
     return integral_sig, integral_bkg
 
 def plot2D(case, sig):
@@ -318,57 +318,34 @@ def plot2D(case, sig):
     hist_purity = hist_sig.Clone()
     hist_sensitivity = hist_sig.Clone()
 
-    #xname = branch1+branches[branch1][-1]
-    #yname = branch2+branches[branch2][-1]
-
-    #c1 = TCanvas("c1", "c1", 600, 600)
-    #gStyle.SetOptStat(0)
-    #c1.Divide(2,2)
-
-   # if(getRegions):
-   #     line1 = TLine(0, 400, 1, 400)
-   #     line2 = TLine(0, 200, 1, 200)
-   #     line3 = TLine(0.7, 0, 0.7, 1000)
-
-   #     line1.SetLineColor(kRed)
-   #     line2.SetLineColor(kRed)
-   #     line3.SetLineColor(kRed)
-
-   #     line1.SetLineWidth(2)
-   #     line2.SetLineWidth(2)
-   #     line3.SetLineWidth(2)
-        
     # plot signal
     c1.cd(1)
-    #c1_1.SetLeftMargin(0.12)
-    #c1_1.SetRightMargin(0.12)
     hist_sig.GetXaxis().SetTitle(xname)
     hist_sig.GetYaxis().SetTitle(yname)
     hist_sig.SetTitle("Signal")
     hist_sig.Draw("COLZ")
-    plotRegions(getRegions, line1, line2, line3)
+    if(getRegions):
+        plotRegions(line1, line2, line3, line4, line5, line6)
 
     # plot background
     c1.cd(2)
-    #c1_2.SetLeftMargin(0.12)
-    #c1_2.SetRightMargin(0.12)
     hist_bkg.GetXaxis().SetTitle(xname)
     hist_bkg.GetYaxis().SetTitle(yname)
     hist_bkg.SetTitle("Backgrounds")
     hist_bkg.Draw("COLZ")
-    plotRegions(getRegions, line1, line2, line3)
+    if(getRegions):
+        plotRegions(line1, line2, line3, line4, line5, line6)
 
     # plot purity
     hist_purity.Divide(hist_bkg)
     
     c1.cd(3)
-    #c1_3.SetLeftMargin(0.12)
-    #c1_3.SetRightMargin(0.12)
     hist_purity.GetXaxis().SetTitle(xname)
     hist_purity.GetYaxis().SetTitle(yname)
     hist_purity.SetTitle("Signal Purity S/B")
     hist_purity.Draw("COLZ")
-    plotRegions(getRegions, line1, line2, line3)
+    if(getRegions):
+        plotRegions(line1, line2, line3, line4, line5, line6)
 
     # plot signal sensitivity
     for bin in range(hist_bkg_copy.GetNcells()):
@@ -380,36 +357,36 @@ def plot2D(case, sig):
     hist_sensitivity.Divide(hist_bkg_copy)
 
     c1.cd(4)
-    #c1_4.SetLeftMargin(0.12)
-    #c1_4.SetRightMargin(0.12)
     hist_sensitivity.GetXaxis().SetTitle(xname)
     hist_sensitivity.GetYaxis().SetTitle(yname)
     hist_sensitivity.SetTitle("Signal Sensitivity S/sqrt(S+B)")
     hist_sensitivity.Draw("COLZ")
-    plotRegions(getRegions, line1, line2, line3)
+    if(getRegions):
+        plotRegions(line1, line2, line3, line4, line5, line6)
 
-    # define region ranges
-    Dx_min, Cx_min, Yx_min = 0, 0, 0
-    Dx_max, Cx_max, Yx_max = 0.7, 0.7, 0.7 # probably should be changed to inf
-    Bx_min, Ax_min, Xx_min = 0.7, 0.7, 0.7
-    Bx_max, Ax_max, Xx_max = 1, 1, 1
+    if(getRegions):
+        # define region ranges
+        Dx_min, Cx_min, Yx_min = 1.1, 1.1, 1.1
+        Dx_max, Cx_max, Yx_max = 1.9, 1.9, 1.9 # probably should be changed to inf
+        Bx_min, Ax_min, Xx_min = 0.1, 0.1, 0.1
+        Bx_max, Ax_max, Xx_max = 0.9, 0.9, 0.9
     
-    Dy_min, By_min = 400, 400
-    Dy_max, By_max = 1000, 1000
-    Ay_min, Cy_min = 200, 200
-    Ay_max, Cy_max = 400, 400
-    Xy_min, Yy_min = 0, 0
-    Xy_max, Yy_max = 200, 200
+        Dy_min, By_min = 1.1, 1.1
+        Dy_max, By_max = 1.9, 1.9
+        Ay_min, Cy_min = 2.1, 2.1
+        Ay_max, Cy_max = 2.9, 2.9
+        Xy_min, Yy_min = 3.1, 3.1
+        Xy_max, Yy_max = 3.9, 3.9
 
-    # integrate histograms over regions
-    text = TLatex()
+        # integrate histograms over regions
+        text = TLatex()
 
-    integrateRegions(hist_sig, hist_bkg, "A", Ax_min, Ax_max, Ay_min, Ay_max, text, c1)
-    integrateRegions(hist_sig, hist_bkg, "B", Bx_min, Bx_max, By_min, By_max, text, c1)
-    integrateRegions(hist_sig, hist_bkg, "C", Cx_min, Cx_max, Cy_min, Cy_max, text, c1)
-    integrateRegions(hist_sig, hist_bkg, "D", Dx_min, Dx_max, Dy_min, Dy_max, text, c1)
-    integrateRegions(hist_sig, hist_bkg, "X", Xx_min, Xx_max, Xy_min, Xy_max, text, c1)
-    integrateRegions(hist_sig, hist_bkg, "Y", Yx_min, Yx_max, Yy_min, Yy_max, text, c1)
+        integrateRegions(hist_sig, hist_bkg, "A", Ax_min, Ax_max, Ay_min, Ay_max, text, c1)
+        integrateRegions(hist_sig, hist_bkg, "B", Bx_min, Bx_max, By_min, By_max, text, c1)
+        integrateRegions(hist_sig, hist_bkg, "C", Cx_min, Cx_max, Cy_min, Cy_max, text, c1)
+        integrateRegions(hist_sig, hist_bkg, "D", Dx_min, Dx_max, Dy_min, Dy_max, text, c1)
+        integrateRegions(hist_sig, hist_bkg, "X", Xx_min, Xx_max, Xy_min, Xy_max, text, c1)
+        integrateRegions(hist_sig, hist_bkg, "Y", Yx_min, Yx_max, Yy_min, Yy_max, text, c1)
 
     c1.Modified()
     c1.Update()
@@ -435,25 +412,34 @@ c1_4.SetRightMargin(0.12)
 
 # Define lines
 if(getRegions):
-    line1 = TLine(0, 400, 1, 400)
-    line2 = TLine(0, 200, 1, 200)
-    line3 = TLine(0.7, 0, 0.7, 1000)
+    line1 = TLine(1, 1, 1, 4)
+    line2 = TLine(2, 1, 2, 4)
+    line3 = TLine(0, 1, 2, 1)
+    line4 = TLine(0, 2, 2, 2)
+    line5 = TLine(0, 3, 2, 3)
+    line6 = TLine(0, 4, 2, 4)
 
     line1.SetLineColor(kRed)
     line2.SetLineColor(kRed)
     line3.SetLineColor(kRed)
+    line4.SetLineColor(kRed)
+    line5.SetLineColor(kRed)
+    line6.SetLineColor(kRed)
 
     line1.SetLineWidth(2)
     line2.SetLineWidth(2)
     line3.SetLineWidth(2)
-
+    line4.SetLineWidth(2)
+    line5.SetLineWidth(2)
+    line6.SetLineWidth(2)
 
 
 xname = branch1+branches[branch1][-1]
 yname = branch2+branches[branch2][-1]
     
-for sig in sig_list:
-    plot2D(case, sig)
+plot2D(case, sigList[0])
+plot2D(case, sigList[1])
+plot2D(case, sigList[2])
 
 end_time2 = time.time()
 print("time elapsed: ", end_time2 - start_time2)
