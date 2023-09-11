@@ -130,15 +130,15 @@ def CreateFromSamples(sample):
     
     # Create histogram from all possible 2d phases
     CreateHistos(Events, combinations1, sample.prefix)
-    CreateHistos(Events, combinations2, sample)
-    CreateHistos(Events, combinations3, sample)
-    CreateHistos(Events, combinations4, sample)
-    CreateHistos(Events, combinations5, sample)
-    #CreateHistos(Events, combinations6, sample)
-    #CreateHistos(Events, combinations7, sample)
-    #CreateHistos(Events, combinations8, sample)
-    #CreateHistos(Events, combinations9, sample)
-    #CreateHistos(Events, combinations10, sample)
+    CreateHistos(Events, combinations2, sample.prefix)
+    CreateHistos(Events, combinations3, sample.prefix)
+    CreateHistos(Events, combinations4, sample.prefix)
+    CreateHistos(Events, combinations5, sample.prefix)
+    #CreateHistos(Events, combinations6, sample.prefix)
+    #CreateHistos(Events, combinations7, sample.prefix)
+    #CreateHistos(Events, combinations8, sample.prefix)
+    #CreateHistos(Events, combinations9, sample.prefix)
+    #CreateHistos(Events, combinations10, sample.prefix)
 
 ##################
 # Get Histograms #
