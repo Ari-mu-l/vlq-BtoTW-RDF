@@ -10,6 +10,7 @@ from utils import *
 case = "_BdecayCase1"
 getHistos = True
 getPlots = True
+lumi = 138000.0
 
 # Setup input dir
 step1dir = 'root://cmseos.fnal.gov//store/user/jmanagan/BtoTW_Sep2023_2018/'
@@ -39,9 +40,9 @@ branches = {
             "gcFatJet_nJ":["gcFatJet_nJ", 10, 0, 10, ""],
             "gcFatJet_nT":["gcFatJet_nT", 10, 0, 10, ""],
             "gcFatJet_nW":["gcFatJet_nW", 10, 0, 10, ""],
-            "max(gcOSFatJet_pNetT[0], gcOSFatJet_pNetW[0])":["leadingOSFatJet_TorW", 20, 0, 2, ""],
-            "min(gcOSFatJet_tau21[0],gcOSFatJet_tau32[0])":["leadingOSFatJet_tau", 20, 0, 1, ""],
-            "max(gcOSFatJet_pNetTvsQCD[0], gcOSFatJet_pNetWvsQCD[0])":["leadingOSFatJet_TWorQCD", 20, 0, 1, ""],
+            "leadingOSFatJet_TorW":["leadingOSFatJet_TorW", 20, 0, 2, ""], # max(gcOSFatJet_pNetT[0], gcOSFatJet_pNetW[0])
+            "leadingOSFatJet_tau":["leadingOSFatJet_tau", 20, 0, 1, ""], # min(gcOSFatJet_tau21[0],gcOSFatJet_tau32[0])
+            "leadingOSFatJet_TWorQCD":["leadingOSFatJet_TWorQCD", 20, 0, 1, ""], #max(gcOSFatJet_pNetTvsQCD[0], gcOSFatJet_pNetWvsQCD[0])
             #"FatJet_pt_1":["FatJet_pt_1", 50, 0, 1500, "[GeV]"],
             #"FatJet_pt_2":["FatJet_pt_2", 50, 0, 1500, "[GeV]"],
             #"FatJet_sdMass_1":["FatJet_sdMass_1", 50, 0, 500, "[Gev]"],
@@ -77,13 +78,16 @@ tags_cases = {"_BdecayCase1":"Bdecay_obs==1",
           }
 
 # 2D phase space choices
-var_list = ["NJets_central", "NJets_DeepFlavL", "NJets_forward", "NFatJets", "NOS_gcJets_central", "NSS_gcJets_central", "NOS_gcJets_DeepFlavL", "NSS_gcJets_DeepFlavL", "NOS_gcFatJets", "NSS_gcFatJets", "gcJet_ST", "gcFatJet_nJ", "gcFatJet_nT", "gcFatJet_nW", "max(gcOSFatJet_pNetT[0], gcOSFatJet_pNetW[0])", "min(gcOSFatJet_tau21[0],gcOSFatJet_tau32[0])", "max(gcOSFatJet_pNetTvsQCD[0], gcOSFatJet_pNetWvsQCD[0])", "minDR_leadAK8otherAK8", "minDR_leadAK4otherAK4", "W_eta", "W_MT", "DR_W_lep", "minM_lep_Jet", "minM_lep_Jet_jetID", "minM_lep_Jet_TorW", "DR_W_b", "Bprime_chi2"]
+var_list = [#"NJets_central", "NJets_DeepFlavL", "NJets_forward", "NFatJets", "NOS_gcJets_central", "NSS_gcJets_central", "NOS_gcJets_DeepFlavL", "NSS_gcJets_DeepFlavL", "NOS_gcFatJets", "NSS_gcFatJets", "gcJet_ST", "gcFatJet_nJ", "gcFatJet_nT", "gcFatJet_nW", "max(gcOSFatJet_pNetT[0], gcOSFatJet_pNetW[0])",
+"leadingOSFatJet_TorW", "leadingOSFatJet_tau", "leadingOSFatJet_TWorQCD"
+#"W_eta", "W_MT", "DR_W_lep", "minM_lep_Jet", "minM_lep_Jet_jetID", "minM_lep_Jet_TorW", "DR_W_b", "Bprime_chi2"
+]
 
 combinations = list(it.combinations(var_list, 2))
 print(len(combinations)) # 351
 
 # split into smaller pieces
-combinations1 = combinations[:3]
+combinations1 = combinations[:35]
 combinations2 = combinations[35:70]
 combinations3 = combinations[70:105]
 combinations4 = combinations[105:140]
@@ -96,8 +100,8 @@ combinations10 = combinations[315:]
 
 # Define functions
 gInterpreter.Declare("""     
-float weights( float genWeight, float xsec, float nRun ){
-return genWeight * xsec / (nRun * abs(genWeight));
+float weights( float genWeight, float lumi, float xsec, float nRun ){
+return genWeight * lumi * xsec / (nRun * abs(genWeight));
 }                                                                                                                                        """)
 
 def CreateHistos(Events_tag, combinations, sample):
@@ -121,20 +125,23 @@ def CreateFromSamples(sample):
     samplename = sample.samplename.split('/')[1]
     tfiles = readTreeNominal(samplename,step1dir,"Events")
 
-    Events = RDataFrame(tfiles).Define("weights","weights(genWeight,{},{})".format(sample.xsec,sample.nrun))
-    Events_tag = Events.Filter(tags_cases[case])
-
+    Events = RDataFrame(tfiles).Define("weights","weights(genWeight,{},{},{})".format(lumi,sample.xsec,sample.nrun)).Filter(tags_cases[case]).Define(
+        "leadingOSFatJet_TorW", "max(gcOSFatJet_pNetT[0], gcOSFatJet_pNetW[0])"
+    ).Define(
+        "leadingOSFatJet_tau", "min(gcOSFatJet_tau21[0],gcOSFatJet_tau32[0])"
+    ).Define("leadingOSFatJet_TWorQCD", "max(gcOSFatJet_pNetTvsQCD[0], gcOSFatJet_pNetWvsQCD[0])")
+    
     # Create histogram from all possible 2d phases
-    CreateHistos(Events_tag, combinations1, sample.prefix)
-    #CreateHistos(Events_tag, combinations2, sample)
-    #CreateHistos(Events_tag, combinations3, sample)
-    #CreateHistos(Events_tag, combinations4, sample)
-    #CreateHistos(Events_tag, combinations5, sample)
-    #CreateHistos(Events_tag, combinations6, sample)
-    #CreateHistos(Events_tag, combinations7, sample)
-    #CreateHistos(Events_tag, combinations8, sample)
-    #CreateHistos(Events_tag, combinations9, sample)
-    #CreateHistos(Events_tag, combinations10, sample)
+    CreateHistos(Events, combinations1, sample.prefix)
+    CreateHistos(Events, combinations2, sample)
+    CreateHistos(Events, combinations3, sample)
+    CreateHistos(Events, combinations4, sample)
+    CreateHistos(Events, combinations5, sample)
+    #CreateHistos(Events, combinations6, sample)
+    #CreateHistos(Events, combinations7, sample)
+    #CreateHistos(Events, combinations8, sample)
+    #CreateHistos(Events, combinations9, sample)
+    #CreateHistos(Events, combinations10, sample)
 
 ##################
 # Get Histograms #
@@ -147,12 +154,6 @@ bkgList = ["QCDHT3002018UL", "QCDHT5002018UL", "QCDHT7002018UL", "QCDHT10002018U
 
 if(getHistos):
     start_time1 = time.time()
-
-    gInterpreter.Declare("""
-    float weights( float genWeight, float lumi, float xsec, float nRun ){
-    return genWeight * lumi * xsec / (nRun * abs(genWeight));
-    }
-    """)
 
     print("Preparing bkgsig_histos2D.root...")
     histfile = TFile.Open("bkgsig_histos2D.root", "RECREATE")
@@ -175,10 +176,10 @@ if(getHistos):
 
     # Add background histograms together
     AddHistos(combinations1, bkgList)
-    #AddHistos(combinations2, bkgList)
-    #AddHistos(combinations3, bkgList)
-    #AddHistos(combinations4, bkgList)
-    #AddHistos(combinations5, bkgList)
+    AddHistos(combinations2, bkgList)
+    AddHistos(combinations3, bkgList)
+    AddHistos(combinations4, bkgList)
+    AddHistos(combinations5, bkgList)
     #AddHistos(combinations6, bkgList)
     #AddHistos(combinations7, bkgList)
     #AddHistos(combinations8, bkgList)
@@ -270,10 +271,10 @@ if(getPlots):
     c1_4.SetRightMargin(0.15)
 
     plot2D(combinations1)
-    #plot2D(combinations2)
-    #plot2D(combinations3)
-    #plot2D(combinations4)
-    #plot2D(combinations5)
+    plot2D(combinations2)
+    plot2D(combinations3)
+    plot2D(combinations4)
+    plot2D(combinations5)
     #plot2D(combinations6)
     #plot2D(combinations7)
     #plot2D(combinations8)
