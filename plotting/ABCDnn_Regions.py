@@ -17,7 +17,7 @@ from math import sqrt
 case = "_BdecayCase1"
 getHistos = True
 getRegions = True
-branch1 = "NJets_forward"
+branch1 = ""
 branch2 = "NJets_DeepFlavL"
 
 sigList = ["Bp800", "Bp1400", "Bp2200"]
