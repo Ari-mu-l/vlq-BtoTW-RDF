@@ -140,7 +140,10 @@ def CreateFromSamples(sample):
 # Get Histograms #
 ##################
 ### Two histograms of interest: _bkg and _Bp1400 ######
-bkgList = ["QCD300", "QCD500", "QCD700", "QCD1000", "QCD1500", "QCD2000", "TTToSemiLeptonic", "WJets200", "WJets400", "WJets600", "WJets800", "WJets1200", "WJets2500"]
+bkgList = ["QCDHT3002018UL", "QCDHT5002018UL", "QCDHT7002018UL", "QCDHT10002018UL", "QCDHT15002018UL", "QCDHT20002018UL", 
+           "TTToSemiLeptonic2018UL", 
+           "WJetsHT2002018UL", "WJetsHT4002018UL", "WJetsHT6002018UL", "WJetsHT8002018UL", "WJetsHT12002018UL", "WJetsHT25002018UL"
+]
 
 if(getHistos):
     start_time1 = time.time()
@@ -194,7 +197,7 @@ print("plotting...")
 start_time2 = time.time()
 histfile = TFile.Open("bkgsig_histos2D.root", "READ")    
 
-sig = "Bp1400"
+sig = "Bprime_M1400_2018UL"
 def plot2D(combinations):
     for branch1, branch2 in combinations:
         # get base histograms
