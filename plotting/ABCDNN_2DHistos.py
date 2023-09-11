@@ -78,10 +78,7 @@ tags_cases = {"_BdecayCase1":"Bdecay_obs==1",
           }
 
 # 2D phase space choices
-var_list = [#"NJets_central", "NJets_DeepFlavL", "NJets_forward", "NFatJets", "NOS_gcJets_central", "NSS_gcJets_central", "NOS_gcJets_DeepFlavL", "NSS_gcJets_DeepFlavL", "NOS_gcFatJets", "NSS_gcFatJets", "gcJet_ST", "gcFatJet_nJ", "gcFatJet_nT", "gcFatJet_nW", "max(gcOSFatJet_pNetT[0], gcOSFatJet_pNetW[0])",
-"leadingOSFatJet_TorW", "leadingOSFatJet_tau", "leadingOSFatJet_TWorQCD"
-#"W_eta", "W_MT", "DR_W_lep", "minM_lep_Jet", "minM_lep_Jet_jetID", "minM_lep_Jet_TorW", "DR_W_b", "Bprime_chi2"
-]
+var_list = ["NJets_central", "NJets_DeepFlavL", "NJets_forward", "NFatJets", "NOS_gcJets_central", "NSS_gcJets_central", "NOS_gcJets_DeepFlavL", "NSS_gcJets_DeepFlavL", "NOS_gcFatJets", "NSS_gcFatJets", "gcJet_ST", "gcFatJet_nJ", "gcFatJet_nT", "gcFatJet_nW", "leadingOSFatJet_TorW", "leadingOSFatJet_tau", "leadingOSFatJet_TWorQCD", "minDR_leadAK8otherAK8", "minDR_leadAK4otherAK4", "W_eta", "W_MT", "DR_W_lep", "minM_lep_Jet", "minM_lep_Jet_jetID", "minM_lep_Jet_TorW", "DR_W_b", "Bprime_chi2"]
 
 combinations = list(it.combinations(var_list, 2))
 print(len(combinations)) # 351
