@@ -11,6 +11,8 @@ case = "_BdecayCase1"
 getHistos = True
 getPlots = True
 lumi = 138000.0
+n = int(sys.argv[1])
+print("Combination set: ", n)
 
 # Setup input dir
 step1dir = 'root://cmseos.fnal.gov//store/user/jmanagan/BtoTW_Sep2023_2018/'
@@ -84,22 +86,18 @@ combinations = list(it.combinations(var_list, 2))
 print(len(combinations)) # 351
 
 # split into smaller pieces
-combinations1 = combinations[:35]
-combinations2 = combinations[35:70]
-combinations3 = combinations[70:105]
-combinations4 = combinations[105:140]
-combinations5 = combinations[140:175]
-combinations6 = combinations[175:210]
-combinations7 = combinations[210:245]
-combinations8 = combinations[245:280]
-combinations9 = combinations[280:315]
-combinations10 = combinations[315:]
+if(n==32):
+    combinations_n = combinations[310:]
+else:
+    combinations_n = combinations[((n-1)*10):(n*10)]
+print("Combinations {} to {}".format(((n-1)*10), (n*10)))
 
 # Define functions
 gInterpreter.Declare("""     
 float weights( float genWeight, float lumi, float xsec, float nRun ){
 return genWeight * lumi * xsec / (nRun * abs(genWeight));
-}                                                                                                                                        """)
+}
+""")
 
 def CreateHistos(Events_tag, combinations, sample):
     histfile.cd()
@@ -129,16 +127,7 @@ def CreateFromSamples(sample):
     ).Define("leadingOSFatJet_TWorQCD", "max(gcOSFatJet_pNetTvsQCD[0], gcOSFatJet_pNetWvsQCD[0])")
     
     # Create histogram from all possible 2d phases
-    CreateHistos(Events, combinations1, sample.prefix)
-    CreateHistos(Events, combinations2, sample.prefix)
-    CreateHistos(Events, combinations3, sample.prefix)
-    CreateHistos(Events, combinations4, sample.prefix)
-    CreateHistos(Events, combinations5, sample.prefix)
-    #CreateHistos(Events, combinations6, sample.prefix)
-    #CreateHistos(Events, combinations7, sample.prefix)
-    #CreateHistos(Events, combinations8, sample.prefix)
-    #CreateHistos(Events, combinations9, sample.prefix)
-    #CreateHistos(Events, combinations10, sample.prefix)
+    CreateHistos(Events, combinations_n, sample.prefix)
 
 ##################
 # Get Histograms #
@@ -172,16 +161,7 @@ if(getHistos):
     CreateFromSamples(WJetsHT25002018UL)
 
     # Add background histograms together
-    AddHistos(combinations1, bkgList)
-    AddHistos(combinations2, bkgList)
-    AddHistos(combinations3, bkgList)
-    AddHistos(combinations4, bkgList)
-    AddHistos(combinations5, bkgList)
-    #AddHistos(combinations6, bkgList)
-    #AddHistos(combinations7, bkgList)
-    #AddHistos(combinations8, bkgList)
-    #AddHistos(combinations9, bkgList)
-    #AddHistos(combinations10, bkgList)
+    AddHistos(combinations_n, bkgList)
 
     histfile.Close()
     end_time1 = time.time()
@@ -267,17 +247,7 @@ if(getPlots):
     c1_3.SetRightMargin(0.15)
     c1_4.SetRightMargin(0.15)
 
-    plot2D(combinations1)
-    plot2D(combinations2)
-    plot2D(combinations3)
-    plot2D(combinations4)
-    plot2D(combinations5)
-    #plot2D(combinations6)
-    #plot2D(combinations7)
-    #plot2D(combinations8)
-    #plot2D(combinations9)
-    #plot2D(combinations10)
-
+    plot2D(combinations_n)
 
 end_time2 = time.time()
 print("time elapsed: ", end_time2 - start_time2)    
