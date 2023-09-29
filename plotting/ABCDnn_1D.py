@@ -12,8 +12,9 @@ from utils import *
 ###############
 #   Options   #
 ###############
-case = "_BdecayCase2and3"
-getHistos = True
+case = "_BdecayCase1and4"
+getHistos = False
+bkgOnly = True
 yLog = False
 transform1 = "Bprime_mass"
 transform2 = "gcJet_ST"
@@ -155,14 +156,63 @@ colors_bkg = {"QCD":40,
               "TTToSemiLeptonic":42
           }
 
+def plot1D_bkg(transform, regionList, label):
+    xname = transform+branches[transform][-1]
+    yname = "Events"
+    c1 = TCanvas("c", "c", 700,600)
+    Legend = TLegend(0.6, 0.7, 0.9, 0.9)
+
+    gStyle.SetOptStat(0)
+    if(yLog):
+        gPad.SetLogy()
+        outname = outdir + subdir + transform + "_" + label + "_logY.png"
+    else:
+        outname = outdir + subdir + transform + "_" + label + ".png"
+
+    histfile = TFile.Open(histfile_name, "READ")
+    
+    histo_sum_bkg0 = TH1D("", "", branches[transform][1], branches[transform][2], branches[transform][3])
+    histo_sum_bkg1 = TH1D("", "", branches[transform][1], branches[transform][2], branches[transform][3])
+    histo_sum_bkg2 = TH1D("", "", branches[transform][1], branches[transform][2], branches[transform][3])
+    histo_stack_bkg = THStack(transform, transform)
+        
+    for bkg in bkgDir:
+        histo0 = histfile.Get("{}_{}_weighted{}_{}".format(transform, bkg, case, regionList[0]))
+        histo1 = histfile.Get("{}_{}_weighted{}_{}".format(transform, bkg, case, regionList[1]))
+        histo2 = histfile.Get("{}_{}_weighted{}_{}".format(transform, bkg, case, regionList[2]))
+        histo_sum_bkg0.Add(histo0)
+        histo_sum_bkg1.Add(histo1)
+        histo_sum_bkg2.Add(histo2)
+
+    histo_sum_bkg0.SetLineColor(40)
+    histo_sum_bkg0.SetFillColor(40)
+    histo_sum_bkg1.SetLineColor(41)
+    histo_sum_bkg1.SetFillColor(41)
+    histo_sum_bkg2.SetLineColor(42)
+    histo_sum_bkg2.SetFillColor(42)
+    Legend.AddEntry(histo_sum_bkg0, regionList[0], 'f')
+    Legend.AddEntry(histo_sum_bkg1, regionList[1], 'f')
+    Legend.AddEntry(histo_sum_bkg2, regionList[2], 'f')
+    histo_stack_bkg.Add(histo_sum_bkg0)
+    histo_stack_bkg.Add(histo_sum_bkg1)
+    histo_stack_bkg.Add(histo_sum_bkg2)
+    
+    histo_stack_bkg.Draw("HIST")
+    Legend.Draw()
+    histo_stack_bkg.GetXaxis().SetTitle(xname)
+    histo_stack_bkg.GetYaxis().SetTitle(yname)
+    histo_stack_bkg.GetXaxis().SetRangeUser(branches[transform][2], branches[transform][3])
+    c1.Modified()
+    c1.SaveAs(outname)
+    c1.Close()
+
+
 def plot1D_bkgsig(transform, region):
     Legend = TLegend(0.6, 0.7, 0.9, 0.9)
     histo_stack_sig = THStack(transform, transform)
     histo_stack_bkg = THStack(transform, transform)
-    if(transform=="Bprime_mass"):
-        histo_sum_bkg = TH1D("","",100,0,6000)
-    if(transform=="gcJet_ST"):
-        histo_sum_bkg = TH1D("","",100,0,5000)
+
+    histo_sum_bkg = TH1D("", "", branches[transform][1], branches[transform][2], branches[transform][3])
 
     xname = transform+branches[transform][-1]
     yname = "Events"
@@ -218,7 +268,10 @@ def plot1D_bkgsig(transform, region):
     c1.Close()
 
 if bkgOnly == True:
-
+    plot1D_bkg(transform1, ["A", "B", "X"], "ABX")
+    plot1D_bkg(transform1, ["C", "D", "Y"], "CDY")
+    plot1D_bkg(transform2, ["A", "B", "X"], "ABX")
+    plot1D_bkg(transform2, ["C", "D", "Y"], "CDY")
 else:
     for region in Regions:
         plot1D_bkgsig(transform1, region)
