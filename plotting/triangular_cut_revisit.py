@@ -12,6 +12,7 @@ import itertools
 
 getHistos = False
 lumi = 138000.0
+MET_cut = 50
 
 indir = "root://cmseos.fnal.gov//store/user/kjohnso/BtoTW_Jul2023/LeptonChecks/QCDBp_scenarios/"
 outdir = os.getcwd()+'/plots_triangularCut/'
@@ -57,14 +58,23 @@ float dphi(const float& phi1, const float& phi2) {
 }
 '''
 gInterpreter.Declare(dphi)
-gInterpreter.Declare("""
+gInterpreter.Declare(
+"""
 float weights( float genWeight, float lumi, float xsec, float nRun ){
 return genWeight * lumi * xsec / (nRun * abs(genWeight));
 }
-""")
+"""
+)
+gInterpreter.Declare(
+"""
+float MET_phi_threshold(float MET_Lep_DeltaPhi, float k){
+return (k/1.5) * MET_Lep_DeltaPhi - k;
+}
+"""
+)
 
+histfile_name = "triangular_cut_histo.root"
 if(getHistos):
-    histfile_name = "triangular_cut_histo.root"
     histfile = TFile.Open(histfile_name, "RECREATE")
     for sample in samples:
         filename1 = "root://cmseos.fnal.gov//store/user/kjohnso/BtoTW_Jul2023/LeptonChecks/QCDBp_short/"+sample+"_MET.root"
@@ -84,19 +94,67 @@ if(getHistos):
         histo.Write(sample)
     histfile.Close()
         
-histfile = TFile.Open(histfile_name, "READ")
+histfile = TFile.Open(histfile_name, "UPDATE")
 
-chain_bkg = TChain("Events")
-for sample in samples:
-    if "QCD" in sample:
-        chain_bkg.Add("triangular_cut_{}.root".format(sample))
-        
-Events_bkg = RDataFrame("Events", chain_bkg)
-Events_Bp800 = RDataFrame("Events", "triangular_cut_Bprime800.root")
+k_choices = np.arange(100, 205, 5)
+pt_choices = np.arange(50,75,5) # 50, 55, 60, 65, 70
 
-kList = np.arange(100, 205, 5).tolist()
-ptList = np.arange(50,75,5).tolist()
-permutations = itertools.product(ptList, kList)
+nPermute = len(k_choices)
+print(nPermute)
 
-#for k, pt in permutations:
-    #MET_ptThreshold = (k/1.5) * El_DelPhi - k
+N_before = {"Bprime800":np.zeros(nPermute),
+            "Bprime1400":np.zeros(nPermute),
+            "Bprime2000":np.zeros(nPermute),
+            "QCD300":np.zeros(nPermute),
+            "QCD500":np.zeros(nPermute),
+            "QCD700":np.zeros(nPermute),
+            "QCD1000":np.zeros(nPermute),
+            "QCD1500":np.zeros(nPermute),
+            "QCD2000":np.zeros(nPermute),
+}
+
+N_after = {"Bprime800":np.zeros(nPermute),
+            "Bprime1400":np.zeros(nPermute),
+            "Bprime2000":np.zeros(nPermute),
+            "QCD300":np.zeros(nPermute),
+            "QCD500":np.zeros(nPermute),
+            "QCD700":np.zeros(nPermute),
+            "QCD1000":np.zeros(nPermute),
+            "QCD1500":np.zeros(nPermute),
+            "QCD2000":np.zeros(nPermute),
+}
+
+def getCounts(sample, MET_cut, i):
+    Events = RDataFrame("Events", "triangular_cut_{}.root".format(sample))
+
+    histo_before = Events.Histo1D("MET_pt","weights")
+    histo_after = Events.Filter("MET_pt>{}".format(MET_cut)).Define("MET_phi_threshold", "MET_phi_threshold(MET_Lep_DeltaPhi, {})".format(k_choices[i])).Filter("MET_pt>MET_phi_threshold").Histo1D("MET_pt","weights")
+
+    N_before[sample][i] = histo_before.Integral()
+    N_after[sample][i]= histo_after.Integral()
+
+for i in range(nPermute):
+    getCounts("Bprime800",  MET_cut, i)
+    getCounts("Bprime1400", MET_cut, i)
+    getCounts("Bprime2000", MET_cut, i)
+    getCounts("QCD300", MET_cut, i)
+    getCounts("QCD500", MET_cut, i)
+    getCounts("QCD700", MET_cut, i)
+    getCounts("QCD1000",MET_cut, i)
+    getCounts("QCD1500",MET_cut, i)
+    getCounts("QCD2000",MET_cut, i)
+
+print(N_before)
+print(N_after)
+
+N_bkg_before = np.zeros(nPermute)
+N_bkg_after =np.zeros(nPermute)
+for sample in N_before:
+    if("QCD" in sample):
+        N_bkg_before += N_before[sample]
+        N_bkg_after += N_after[sample]
+
+ax1.plot(k_choices, N_before["Bprime800"]/np.sqrt(N_bkg_before))
+ax1.plot(k_choices, N_before["Bprime1400"]/np.sqrt(N_bkg_before))
+ax1.plot(k_choices, N_before["Bprime2000"]/np.sqrt(N_bkg_before))
+

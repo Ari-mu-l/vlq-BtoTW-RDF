@@ -13,8 +13,11 @@ from utils import *
 #   Options   #
 ###############
 case = "_BdecayCase1and4"
-getHistos = False
-bkgOnly = True
+getHistos = True
+addNew = True
+withSig = False
+withData = True
+stacked = False
 yLog = False
 transform1 = "Bprime_mass"
 transform2 = "gcJet_ST"
@@ -85,17 +88,20 @@ def CreateFromSamples(sample):
     CreateHistos(Events_tag, prefix, "X")
     CreateHistos(Events_tag, prefix, "Y")
 
-def AddHistos(bkg, region):
-    bkgList = bkgDir[bkg]
-    histo1 = histfile.Get("{}_{}_weighted{}_{}".format(transform1, bkgList[0], case, region))
-    histo2 = histfile.Get("{}_{}_weighted{}_{}".format(transform2, bkgList[0], case, region))
-    for i in range(1, len(bkgList)):
-        histo1_i =  histfile.Get("{}_{}_weighted{}_{}".format(transform1, bkgList[i], case, region))
-        histo2_i =  histfile.Get("{}_{}_weighted{}_{}".format(transform2, bkgList[i], case, region))
-        histo1.Add(histo1_i)
-        histo2.Add(histo2_i)
-    histo1.Write("{}_{}_weighted{}_{}".format(transform1, bkg, case, region))
-    histo2.Write("{}_{}_weighted{}_{}".format(transform2, bkg, case, region))
+def AddHistos(sampleDir, region):
+    for sample in sampleDir:
+        sampleList = sampleDir[sample]
+        histo1 = histfile.Get("{}_{}_weighted{}_{}".format(transform1, sampleList[0], case, region))
+        histo2 = histfile.Get("{}_{}_weighted{}_{}".format(transform2, sampleList[0], case, region))
+
+        for i in range(1, len(bkgList)):
+            histo1_i =  histfile.Get("{}_{}_weighted{}_{}".format(transform1, sampleList[i], case, region))
+            histo2_i =  histfile.Get("{}_{}_weighted{}_{}".format(transform2, sampleList[i], case, region))
+            histo1.Add(histo1_i)
+            histo2.Add(histo2_i)
+
+        histo1.Write("{}_{}_weighted{}_{}".format(transform1, bkg, case, region))
+        histo2.Write("{}_{}_weighted{}_{}".format(transform2, bkg, case, region))
 
 # Get Histograms
 histfile_name =  "ABCDnn_1D_{}_{}{}.root".format(transform1, transform2, case)  
@@ -103,33 +109,43 @@ bkgDir = {"QCD":["QCDHT3002018UL", "QCDHT5002018UL", "QCDHT7002018UL", "QCDHT100
           "TTToSemiLeptonic":["TTToSemiLeptonic2018UL"], 
           "WJets": ["WJetsHT2002018UL", "WJetsHT4002018UL", "WJetsHT6002018UL", "WJetsHT8002018UL", "WJetsHT12002018UL", "WJetsHT25002018UL"],
       }
+dataDir = {"data": ["SingleMuon", "EGamma"]}
 
 if(getHistos):
     start_time1 = time.time()
 
     print("Preparing {} ...".format(histfile_name))
-    histfile = TFile.Open(histfile_name, "RECREATE")
-    CreateFromSamples(Bprime_M800_2018UL)
-    CreateFromSamples(Bprime_M1400_2018UL)
-    CreateFromSamples(Bprime_M2200_2018UL)
-    CreateFromSamples(QCDHT3002018UL)
-    CreateFromSamples(QCDHT5002018UL)
-    CreateFromSamples(QCDHT7002018UL)
-    CreateFromSamples(QCDHT10002018UL)
-    CreateFromSamples(QCDHT15002018UL)
-    CreateFromSamples(QCDHT20002018UL)
-    CreateFromSamples(TTToSemiLeptonic2018UL)
-    CreateFromSamples(WJetsHT2002018UL)
-    CreateFromSamples(WJetsHT4002018UL)
-    CreateFromSamples(WJetsHT6002018UL)
-    CreateFromSamples(WJetsHT8002018UL)
-    CreateFromSamples(WJetsHT12002018UL)
-    CreateFromSamples(WJetsHT25002018UL)
+    if(addNew):
+        histfile = TFile.Open(histfile_name, "UPDATE")
+    else:
+        histfile = TFile.Open(histfile_name, "RECREATE")
+
+    #CreateFromSamples(Bprime_M800_2018UL)
+    #CreateFromSamples(Bprime_M1400_2018UL)
+    #CreateFromSamples(Bprime_M2200_2018UL)
+    #CreateFromSamples(QCDHT3002018UL)
+    #CreateFromSamples(QCDHT5002018UL)
+    #CreateFromSamples(QCDHT7002018UL)
+    #CreateFromSamples(QCDHT10002018UL)
+    #CreateFromSamples(QCDHT15002018UL)
+    #CreateFromSamples(QCDHT20002018UL)
+    #CreateFromSamples(TTToSemiLeptonic2018UL)
+    #CreateFromSamples(WJetsHT2002018UL)
+    #CreateFromSamples(WJetsHT4002018UL)
+    #CreateFromSamples(WJetsHT6002018UL)
+    #CreateFromSamples(WJetsHT8002018UL)
+    #CreateFromSamples(WJetsHT12002018UL)
+    #CreateFromSamples(WJetsHT25002018UL)
+    CreateFromSamples(SingleMuon)
+    CreateFromSamples(EGamma)
+
     # add histos
+    #for region in Regions:
+        #AddHistos(bkgDir, region)
+
     for region in Regions:
-        AddHistos("QCD", region)
-        AddHistos("TTToSemiLeptonic", region)
-        AddHistos("WJets", region)
+        AddHistos(dataDir, region)
+        
     # close file
     histfile.Close()
     end_time1 = time.time()
@@ -156,7 +172,7 @@ colors_bkg = {"QCD":40,
               "TTToSemiLeptonic":42
           }
 
-def plot1D_bkg(transform, regionList, label):
+def plot1D_Stack(transform, regionList, label):
     xname = transform+branches[transform][-1]
     yname = "Events"
     c1 = TCanvas("c", "c", 700,600)
@@ -206,8 +222,37 @@ def plot1D_bkg(transform, regionList, label):
     c1.SaveAs(outname)
     c1.Close()
 
+def histoScale(sigList):
+    histfile = TFile.Open(histfile_name, "READ")
 
-def plot1D_bkgsig(transform, region):
+    for bkg in bkgDir:
+        histo = histfile.Get("{}_{}_weighted{}_{}".format(transform, bkg, case, region))
+        histo_sum_bkg.Add(histo)
+
+    for sig in sigList:
+        histo = histfile.Get("{}_{}_weighted{}_{}".format(transform, sig, case, region))
+        if(withSig):
+            histo.SetLineColor(colors_sig[sig])
+            Legend.AddEntry(histo, sig, 'l')
+        else:
+            Legend.AddEntry(histo, sig, 'lep')
+        histo_stack_sig.Add(histo)
+
+    histo_stack_sig.Draw("HIST NOSTACK")
+    time.sleep(3)
+    rightmax = 1.1*histo_sum_bkg.GetMaximum()
+    scale = gPad.GetUymax()/rightmax
+
+    for bkg in bkgDir:
+        histo = histfile.Get("{}_{}_weighted{}_{}".format(transform, bkg, case, region))
+        histo.Scale(scale)
+
+        histo.SetLineColor(colors_bkg[bkg])
+        histo.SetFillColor(colors_bkg[bkg])
+        Legend.AddEntry(histo, bkg, 'f')
+        histo_stack_bkg.Add(histo)
+
+def plot1D_noStack(transform, region):
     Legend = TLegend(0.6, 0.7, 0.9, 0.9)
     histo_stack_sig = THStack(transform, transform)
     histo_stack_bkg = THStack(transform, transform)
@@ -219,46 +264,43 @@ def plot1D_bkgsig(transform, region):
     c1 = TCanvas("c", "c", 700,600)
 
     gStyle.SetOptStat(0)
+    outname = "{}{}{}_{}".format(outdir, subdir, transform, region)
+    if(withData):
+        outname += "data"
     if(yLog):
         gPad.SetLogy()
-        outname = outdir + subdir + transform + "_" + region + "_logY.png"
-    else:
-        outname = outdir + subdir + transform + "_" + region + ".png"
+        outname += "_logY"
+    outname += ".png"
 
     histfile = TFile.Open(histfile_name, "READ")
-
-    for sig in sigList:
-        histo = histfile.Get("{}_{}_weighted{}_{}".format(transform, sig, case, region))
-        #histo.Draw()
-        #time.sleep(10)
-        histo.SetLineColor(colors_sig[sig])
-        Legend.AddEntry(histo, sig, 'l')
-        histo_stack_sig.Add(histo)
-
-    for bkg in bkgDir:
-        histo = histfile.Get("{}_{}_weighted{}_{}".format(transform, bkg, case, region))
-        histo_sum_bkg.Add(histo)
-
-    histo_stack_sig.Draw("HIST NOSTACK")
-    time.sleep(3)
-    rightmax = 1.1*histo_sum_bkg.GetMaximum()
-    scale = gPad.GetUymax()/rightmax
-
-    for bkg in bkgDir:
-        histo = histfile.Get("{}_{}_weighted{}_{}".format(transform, bkg, case, region))
-        histo.Scale(scale)
-        #histo.Draw("HIST")                                                                                                                              
-        #time.sleep(10)
-        histo.SetLineColor(colors_bkg[bkg])
-        histo.SetFillColor(colors_bkg[bkg])
-        Legend.AddEntry(histo, bkg, 'f')
-        histo_stack_bkg.Add(histo)
+    
+    if(withSig):
+        histoScale(sigList)
+    elif(withData):
+        histoScale(dataDir)
+    else:
+        for bkg in bkgDir:
+            histo = histfile.Get("{}_{}_weighted{}_{}".format(transform, bkg, case, region))
+            
+            histo.SetLineColor(colors_bkg[bkg])
+            histo.SetFillColor(colors_bkg[bkg])
+            Legend.AddEntry(histo, bkg, 'f')
+            histo_stack_bkg.Add(histo)
 
     histo_stack_bkg.Draw("HIST")
-    histo_stack_sig.Draw("HIST NOSTACK SAME")
+
+    if(withSig):
+        histo_stack_sig.Draw("HIST NOSTACK SAME")
     
-    axis = TGaxis(gPad.GetUxmax(),gPad.GetUymin(), gPad.GetUxmax(), gPad.GetUymax(), 0, rightmax, 510, "+L")
-    axis.Draw()
+        axis = TGaxis(gPad.GetUxmax(),gPad.GetUymin(), gPad.GetUxmax(), gPad.GetUymax(), 0, rightmax, 510, "+L")
+        axis.Draw()
+    if(withData):
+        histo_stack_sig.Draw("P SAME")
+
+        axis = TGaxis(gPad.GetUxmax(),gPad.GetUymin(), gPad.GetUxmax(), gPad.GetUymax(), 0, rightmax, 510, "+L")
+        axis.Draw()
+
+
     Legend.Draw()
     histo_stack_bkg.GetXaxis().SetTitle(xname)
     histo_stack_bkg.GetYaxis().SetTitle(yname)
@@ -267,12 +309,12 @@ def plot1D_bkgsig(transform, region):
     c1.SaveAs(outname)
     c1.Close()
 
-if bkgOnly == True:
-    plot1D_bkg(transform1, ["A", "B", "X"], "ABX")
-    plot1D_bkg(transform1, ["C", "D", "Y"], "CDY")
-    plot1D_bkg(transform2, ["A", "B", "X"], "ABX")
-    plot1D_bkg(transform2, ["C", "D", "Y"], "CDY")
+if (stacked):
+    plot1D_Stack(transform1, ["A", "B", "X"], "ABX")
+    plot1D_Stack(transform1, ["C", "D", "Y"], "CDY")
+    plot1D_Stack(transform2, ["A", "B", "X"], "ABX")
+    plot1D_Stack(transform2, ["C", "D", "Y"], "CDY")
 else:
     for region in Regions:
-        plot1D_bkgsig(transform1, region)
-        plot1D_bkgsig(transform2, region)
+        plot1D_noStack(transform1, region)
+        plot1D_noStack(transform2, region)
