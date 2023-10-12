@@ -96,7 +96,7 @@ if(getHistos):
         
 histfile = TFile.Open(histfile_name, "UPDATE")
 
-k_choices = np.arange(100, 205, 5)
+k_choices = np.arange(50, 255, 5)
 pt_choices = np.arange(50,75,5) # 50, 55, 60, 65, 70
 
 nPermute = len(k_choices)
