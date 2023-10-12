@@ -96,76 +96,64 @@ if(getHistos):
         
 histfile = TFile.Open(histfile_name, "UPDATE")
 
-k_choices = np.arange(100, 205, 5)
+k_choices = np.arange(50, 255, 5)
 pt_choices = np.arange(50,75,5) # 50, 55, 60, 65, 70
 
 nPermute = len(k_choices)
 print(nPermute)
 
-N_before = {"Bprime800":np.zeros(nPermute),
-            "Bprime1400":np.zeros(nPermute),
-            "Bprime2000":np.zeros(nPermute),
-            "QCD300":np.zeros(nPermute),
-            "QCD500":np.zeros(nPermute),
-            "QCD700":np.zeros(nPermute),
-            "QCD1000":np.zeros(nPermute),
-            "QCD1500":np.zeros(nPermute),
-            "QCD2000":np.zeros(nPermute),
-}
+#chain_bkg = TChain("Events")
+#for sample in samples:
+#    if "QCD" in sample:
+#        chain_bkg.Add("triangular_cut_{}.root".format(sample))
 
-N_after = {"Bprime800":np.zeros(nPermute),
-            "Bprime1400":np.zeros(nPermute),
-            "Bprime2000":np.zeros(nPermute),
-            "QCD300":np.zeros(nPermute),
-            "QCD500":np.zeros(nPermute),
-            "QCD700":np.zeros(nPermute),
-            "QCD1000":np.zeros(nPermute),
-            "QCD1500":np.zeros(nPermute),
-            "QCD2000":np.zeros(nPermute),
-}
+def getCounts(sample, MET_cut):
+    print("Counting {} for MET_pt>{}".format(sample, MET_cut))
 
-def getCounts(sample, MET_cut, i):
-    Events = RDataFrame("Events", "triangular_cut_{}.root".format(sample))
+    N_Pass = np.zeros(nPermute)
+    N_NoPass = np.zeros(nPermute)
 
-    histo_before = Events.Histo1D("MET_pt","weights")
-    histo_after = Events.Filter("MET_pt>{}".format(MET_cut)).Define("MET_phi_threshold", "MET_phi_threshold(MET_Lep_DeltaPhi, {})".format(k_choices[i])).Filter("MET_pt>MET_phi_threshold").Histo1D("MET_pt","weights")
+    tfile = TFile.Open("triangular_cut_{}.root".format(sample))
+    ftree = tfile.Get("Events")
+    nEntries = ftree.GetEntries()
 
-    N_before[sample][i] = histo_before.Integral()
-    N_after[sample][i]= histo_after.Integral()
+    for i in range(nEntries):
+        if(ftree.GetEntry(i)>0):
+            MET_pt = ftree.MET_pt
+            Del_phi = ftree.MET_Lep_DeltaPhi
+            pt_phi_threshold = (k_choices/1.5) * Del_phi - k_choices
+
+            for j in range(nPermute):
+                if MET_pt>pt_phi_threshold[j]:
+                    N_Pass[j]+=1
+                else:
+                    N_NoPass[j]+=1
+    return N_Pass, N_NoPass
 
 def getPlots(MET_cut):
-    for i in range(nPermute):
-        getCounts("Bprime800",  MET_cut, i)
-        getCounts("Bprime1400", MET_cut, i)
-        getCounts("Bprime2000", MET_cut, i)
-        getCounts("QCD300", MET_cut, i)
-        getCounts("QCD500", MET_cut, i)
-        getCounts("QCD700", MET_cut, i)
-        getCounts("QCD1000",MET_cut, i)
-        getCounts("QCD1500",MET_cut, i)
-        getCounts("QCD2000",MET_cut, i)
-
-    print(N_before)
-    print(N_after)
-
-    N_bkg_before = np.zeros(nPermute)
-    N_bkg_after =np.zeros(nPermute)
-    for sample in N_before:
-        if("QCD" in sample):
-            N_bkg_before += N_before[sample]
-            N_bkg_after += N_after[sample]
+    Bp800_Pass, Bp800_NoPass = getCounts("Bprime800",  MET_cut)
+    Bp1400_Pass, Bp1400_NoPass = getCounts("Bprime1400", MET_cut)
+    Bp2000_Pass, Bp2000_NoPass = getCounts("Bprime2000", MET_cut)
+    QCD300_Pass, QCD300_NoPass = getCounts("QCD300",  MET_cut)
+    QCD500_Pass, QCD500_NoPass = getCounts("QCD500",  MET_cut)
+    QCD700_Pass, QCD700_NoPass = getCounts("QCD700",  MET_cut)
+    QCD1000_Pass, QCD1000_NoPass = getCounts("QCD1000",  MET_cut)
+    QCD1500_Pass, QCD1500_NoPass = getCounts("QCD1500",  MET_cut)
+    QCD2000_Pass, QCD2000_NoPass = getCounts("QCD2000",  MET_cut)
+    bkg_Pass = QCD300_Pass+QCD700_Pass+QCD1000_Pass+QCD1500_Pass+QCD2000_Pass
+    #bkg_NoPass = QCD300_NoPass+QCD700_NoPass+QCD1000_NoPass+QCD1500_NoPass+QCD2000_NoPass
 
     fig, (ax1, ax2) = plt.subplots(1,2)
     fig.set_size_inches(12, 6)
     fig.suptitle('Optimization scan for triangular cut with MET_pt>{}'.format(MET_cut))
 
-    ax1.plot(k_choices, N_after["Bprime800"]/np.sqrt(N_bkg_after), label="Bprime800")
-    ax1.plot(k_choices, N_after["Bprime1400"]/np.sqrt(N_bkg_after), label = "Bprime1400")
-    ax1.plot(k_choices, N_after["Bprime2000"]/np.sqrt(N_bkg_after), label = "Bprime2000")
+    ax1.plot(k_choices, Bp800_Pass/np.sqrt(bkg_Pass), label="Bprime800")
+    ax1.plot(k_choices, Bp1400_Pass/np.sqrt(bkg_Pass), label = "Bprime1400")
+    ax1.plot(k_choices, Bp2000_Pass/np.sqrt(bkg_Pass), label = "Bprime2000")
     
-    ax2.plot(k_choices, N_after["Bprime800"]/N_before["Bprime800"], label="Bprime800")
-    ax2.plot(k_choices, N_after["Bprime1400"]/N_before["Bprime1400"], label = "Bprime1400")
-    ax2.plot(k_choices, N_after["Bprime2000"]/N_before["Bprime2000"], label = "Bprime2000")
+    ax2.plot(k_choices, Bp800_Pass/(Bp800_Pass+Bp800_NoPass), label="Bprime800")
+    ax2.plot(k_choices, Bp1400_Pass/(Bp1400_Pass+Bp1400_NoPass), label = "Bprime1400")
+    ax2.plot(k_choices, Bp2000_Pass/(Bp2000_Pass+Bp2000_NoPass), label = "Bprime2000")
     
     ax1.set_xlabel('k [GeV]')
     ax2.set_xlabel('k [GeV]')
@@ -179,9 +167,11 @@ def getPlots(MET_cut):
     plt.show()
     fig.savefig('triangular_cut_pt_{}.png'.format(MET_cut))
 
-
+start = time.time()
 getPlots(pt_choices[0])
 getPlots(pt_choices[1])
 getPlots(pt_choices[2])
 getPlots(pt_choices[3])
 getPlots(pt_choices[4])
+end = time.time()
+print("Time elapsed: {}".format(end-start))
