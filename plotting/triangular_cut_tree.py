@@ -15,7 +15,7 @@ lumi = 138000.0
 #MET_cut = 50
 
 indir = "root://cmseos.fnal.gov//store/user/kjohnso/BtoTW_Jul2023/LeptonChecks/QCDBp_scenarios/"
-outdir = os.getcwd()+'/plots_triangularCut/'
+outdir = os.getcwd()+'/plots_triangularCut_tree/'
 if not os.path.exists(outdir): os.system('mkdir -p ' + outdir)
 
 samples = {"Bprime800":"Bprime800_scenarios.root",

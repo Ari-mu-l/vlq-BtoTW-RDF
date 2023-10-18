@@ -12,7 +12,6 @@ import itertools
 
 getHistos = False
 lumi = 138000.0
-#MET_cut = 50
 
 indir = "root://cmseos.fnal.gov//store/user/kjohnso/BtoTW_Jul2023/LeptonChecks/QCDBp_scenarios/"
 outdir = os.getcwd()+'/plots_triangularCut/'
@@ -106,29 +105,16 @@ N_before = {"Bprime800":np.zeros(nPermute),
             "Bprime1400":np.zeros(nPermute),
             "Bprime2000":np.zeros(nPermute),
             "QCD":np.zeros(nPermute),
-            #"QCD300":np.zeros(nPermute),
-            #"QCD500":np.zeros(nPermute),
-            #"QCD700":np.zeros(nPermute),
-            #"QCD1000":np.zeros(nPermute),
-            #"QCD1500":np.zeros(nPermute),
-            #"QCD2000":np.zeros(nPermute),
 }
 
 N_after = {"Bprime800":np.zeros(nPermute),
            "Bprime1400":np.zeros(nPermute),
            "Bprime2000":np.zeros(nPermute),
            "QCD":np.zeros(nPermute),
-            #"QCD300":np.zeros(nPermute),
-            #"QCD500":np.zeros(nPermute),
-            #"QCD700":np.zeros(nPermute),
-            #"QCD1000":np.zeros(nPermute),
-            #"QCD1500":np.zeros(nPermute),
-            #"QCD2000":np.zeros(nPermute),
 }
 
 def getCounts(sample, Events, MET_cut, i):
     print("Processing {} for MET_pt>{}".format(sample, MET_cut))
-    #Events = RDataFrame("Events", "triangular_cut_{}.root".format(sample))
 
     count_before = Events.Count()
     count_after = Events.Filter("MET_pt>{}".format(MET_cut)).Define("MET_phi_threshold", "MET_phi_threshold(MET_Lep_DeltaPhi, {})".format(k_choices[i])).Filter("MET_pt>MET_phi_threshold").Count()
@@ -155,42 +141,18 @@ def getPlots(MET_cut):
         getCounts("Bprime1400", Bprime1400, MET_cut, i)
         getCounts("Bprime2000", Bprime2000, MET_cut, i)
         getCounts("QCD", QCD, MET_cut, i)
-        #getCounts("QCD300", MET_cut, i)
-        #getCounts("QCD500", MET_cut, i)
-        #getCounts("QCD700", MET_cut, i)
-        #getCounts("QCD1000",MET_cut, i)
-        #getCounts("QCD1500",MET_cut, i)
-        #getCounts("QCD2000",MET_cut, i)
-
-    print(N_before)
-    print(N_after)
-
-    N_bkg_before = np.zeros(nPermute)
-    N_bkg_after =np.zeros(nPermute)
-    #for sample in N_before:
-    #    if("QCD" in sample):
-    #        N_bkg_before += N_before[sample]
-    #        N_bkg_after += N_after[sample]
 
     fig, (ax1, ax2) = plt.subplots(1,2)
     fig.set_size_inches(12, 6)
     fig.suptitle('Optimization scan for triangular cut with MET_pt>{}'.format(MET_cut))
 
-    ax1.plot(k_choices, N_after["Bprime800"]/np.sqrt(N_after["QCD"]), label="Bprime800")
-    ax1.plot(k_choices, N_after["Bprime1400"]/np.sqrt(N_after["QCD"]), label = "Bprime1400")
-    ax1.plot(k_choices, N_after["Bprime2000"]/np.sqrt(N_after["QCD"]), label = "Bprime2000")
+    ax1.plot(k_choices, N_after["Bprime800"]/np.sqrt(N_after["QCD"]), marker='o', linestyle='None', label="Bprime800")
+    ax1.plot(k_choices, N_after["Bprime1400"]/np.sqrt(N_after["QCD"]), marker='o', linestyle='None', label = "Bprime1400")
+    ax1.plot(k_choices, N_after["Bprime2000"]/np.sqrt(N_after["QCD"]), marker='o', linestyle='None', label = "Bprime2000")
 
-    ax2.plot(k_choices, N_after["Bprime800"]/N_before["Bprime800"], label="Bprime800")
-    ax2.plot(k_choices, N_after["Bprime1400"]/N_before["Bprime1400"], label = "Bprime1400")
-    ax2.plot(k_choices, N_after["Bprime2000"]/N_before["Bprime2000"], label = "Bprime2000")
-
-    #ax1.plot(k_choices, N_after["Bprime800"]/np.sqrt(N_bkg_after), label="Bprime800")
-    #ax1.plot(k_choices, N_after["Bprime1400"]/np.sqrt(N_bkg_after), label = "Bprime1400")
-    #ax1.plot(k_choices, N_after["Bprime2000"]/np.sqrt(N_bkg_after), label = "Bprime2000")
-    
-    #ax2.plot(k_choices, N_after["Bprime800"]/N_before["Bprime800"], label="Bprime800")
-    #ax2.plot(k_choices, N_after["Bprime1400"]/N_before["Bprime1400"], label = "Bprime1400")
-    #ax2.plot(k_choices, N_after["Bprime2000"]/N_before["Bprime2000"], label = "Bprime2000")
+    ax2.plot(k_choices, N_after["Bprime800"]/N_before["Bprime800"], marker='o', linestyle='None', label="Bprime800")
+    ax2.plot(k_choices, N_after["Bprime1400"]/N_before["Bprime1400"], marker='o', linestyle='None', label = "Bprime1400")
+    ax2.plot(k_choices, N_after["Bprime2000"]/N_before["Bprime2000"], marker='o', linestyle='None', label = "Bprime2000")
     
     ax1.set_xlabel('k [GeV]')
     ax2.set_xlabel('k [GeV]')
@@ -204,8 +166,8 @@ def getPlots(MET_cut):
     plt.show()
     fig.savefig('triangular_cut_pt_{}.png'.format(MET_cut))
 
-getPlots(pt_choices[0])
-getPlots(pt_choices[1])
-getPlots(pt_choices[2])
-getPlots(pt_choices[3])
+#getPlots(pt_choices[0])
+#getPlots(pt_choices[1])
+#getPlots(pt_choices[2])
+#getPlots(pt_choices[3])
 getPlots(pt_choices[4])

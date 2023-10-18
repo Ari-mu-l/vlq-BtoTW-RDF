@@ -148,23 +148,28 @@ def getWMT(sample, Events, MET_cut, k_choices):
         histfile.cd()
         WMT_after.Write("lepton_pt_{}_{}_{}".format(sample, MET_cut, k))
 
-def getWMTHistos(MET_pt):
-    print("Getting lepton_pt histos for MET_pt>{}".format(MET_pt))
-    getWMT("Bprime800", Bprime800, MET_pt, k_choices)
-    getWMT("Bprime1400", Bprime1400, MET_pt, k_choices)
-    getWMT("Bprime2000", Bprime2000, MET_pt, k_choices)
-    getWMT("QCD", QCD, MET_pt, k_choices)
+def getWMTHistos(MET_cut):
+    print("Gettinglepton_pt histos for MET_pt>{}".format(MET_cut))
+    print("Bprime800...")
+    getWMT("Bprime800", Bprime800, MET_cut, k_choices)
+    print("Bprime1400...")
+    getWMT("Bprime1400", Bprime1400, MET_cut, k_choices)
+    print("Bprime2000...")
+    getWMT("Bprime2000", Bprime2000, MET_cut, k_choices)
+    print("QCD...")
+    getWMT("QCD", QCD, MET_cut, k_choices)
 
-def plotWMTHistos(MET_pt, k_choices):
+def plotWMTHistos(MET_cut, k_choices):
     for k in k_choices:
-        print("Creating histogram plots for MET_pt>{}, k={}".format(MET_pt, k))
+        print("Creating histogram plots for MET_pt>{}, k={}".format(MET_cut, k))
         Bprime800_hist = histfile.Get("lepton_pt_{}_{}_{}".format("Bprime800", MET_cut, k))
         Bprime1400_hist = histfile.Get("lepton_pt_{}_{}_{}".format("Bprime1400", MET_cut, k))
         Bprime2000_hist = histfile.Get("lepton_pt_{}_{}_{}".format("Bprime2000", MET_cut, k))
         QCD_hist = histfile.Get("lepton_pt_{}_{}_{}".format("QCD", MET_cut, k))
 
-        c1 = TCanvas("c1", "c1", 600, 400)
-        
+        c1 = TCanvas("c1", "c1", 700, 600)
+        Legend = TLegend(0.6, 0.7, 0.9, 0.9)
+
         Legend.AddEntry(Bprime800_hist, "Bprime800", "l")
         Legend.AddEntry(Bprime1400_hist, "Bprime1400", "l")
         Legend.AddEntry(Bprime2000_hist, "Bprime2000", "l")
@@ -174,9 +179,9 @@ def plotWMTHistos(MET_pt, k_choices):
         Bprime1400_hist.Draw()
         Bprime2000_hist.Draw()
 
-        rightmax = 1.1*histo_sum_bkg.GetMaximum()
+        rightmax = 1.1*Bprime2000_hist.GetMaximum()
         scale = gPad.GetUymax()/rightmax
-        QCD_hist = QCD_hist(scale)
+        QCD_hist = QCD_hist.Scale(scale)
         
         QCD_hist.Draw("HIST")
         Bprime800_hist.Draw("HIST")
@@ -186,7 +191,7 @@ def plotWMTHistos(MET_pt, k_choices):
         QCD_hist.GetXaxis().SetTitle("lepton_pt")
         QCD_hist.GetYaxis().SetTitle("Events/bin")
         c1.Modified()
-        c1.SaveAs(outdir+"lepton_pt_{}_{}.png".format(MET_pt, k))
+        c1.SaveAs(outdir+"lepton_pt_{}_{}.png".format(MET_cut, k))
         c1.Close()
         
 
@@ -221,25 +226,23 @@ def getPlots(MET_cut):
     plt.show()
     fig.savefig('triangular_cut_pt_{}.png'.format(MET_cut))
 
-if(getEffPlots):
-    getPlots(pt_choices[0])
-    getPlots(pt_choices[1])
-    getPlots(pt_choices[2])
-    getPlots(pt_choices[3])
-    getPlots(pt_choices[4])
+#if(getEffPlots):
+#    getPlots(pt_choices[0])
+#    getPlots(pt_choices[1])
+#    getPlots(pt_choices[2])
+#    getPlots(pt_choices[3])
+#    getPlots(pt_choices[4])
 
 if(getWMTHistos):
     getWMTHistos(pt_choices[0])
-    getWMTHistos(pt_choices[1])
-    getWMTHistos(pt_choices[2])
-    getWMTHistos(pt_choices[3])
-    getWMTHistos(pt_choices[4])
+    #getWMTHistos(pt_choices[1])
+    #getWMTHistos(pt_choices[2])
+    #getWMTHistos(pt_choices[3])
+    #getWMTHistos(pt_choices[4])
 
 if(plotWMTHistos):
     plotWMTHistos(pt_choices[0], k_choices)
-    plotWMTHistos(pt_choices[1], k_choices)
-    plotWMTHistos(pt_choices[2], k_choices)
-    plotWMTHistos(pt_choices[3], k_choices)
-    plotWMTHistos(pt_choices[4], k_choices)
-
-
+    #plotWMTHistos(pt_choices[1], k_choices)
+    #plotWMTHistos(pt_choices[2], k_choices)
+    #plotWMTHistos(pt_choices[3], k_choices)
+    #plotWMTHistos(pt_choices[4], k_choices)
