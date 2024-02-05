@@ -23,7 +23,7 @@
 #include "TLorentzVector.h"
 #include "ROOT/RDataFrame.hxx"
 #include "ROOT/RVec.hxx"
-#include "../correctionlib/include/correction.h"
+#include "../../correctionlib/include/correction.h"
 
 enum shift : char;
 
@@ -83,7 +83,7 @@ public:
   rdf(string inputFileName, string testNum1, string testNum2, string yearIn);
   RVec<RVec<float>> cleanJets(RVec<TLorentzVector> &jt_p4, RVec<float> &jt_rf, RVec<TLorentzVector> &mu_p4, RVec<int> mu_jetid, RVec<TLorentzVector> &el_p4, RVec<int> &el_jetid);
   virtual ~rdf();
-  virtual void analyzer_RDF(TString testNum, TString jesvar);
+  virtual void analyzer_pnetEff(TString testNum, TString jesvar);
 };
 
 #endif

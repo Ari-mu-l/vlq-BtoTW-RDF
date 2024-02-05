@@ -7,15 +7,11 @@ echo $SCRAM_ARCH
 # Take in Input Arguments
 infilename=${1}  # Filename is a really long string
 outputDir=${2}
-testnum1=${3}
-testnum2=${4}
-year=${5}
+year=${3}
 
 # Print out Input Arguments
 echo "filename: ${infilename}"
 echo "output dir: ${outputDir}"
-echo "testnum1: ${testnum1}"
-echo "testnum2: ${testnum2}"
 echo "year: ${year}"
 
 # Setup Environment
@@ -32,14 +28,15 @@ tar -xf ${scratch}/rdfjobs.tar
 rm ${scratch}/rdfjobs.tar
 
 eval `scramv1 runtime -sh`
-cd src/vlq-BtoTW-RDF/
+cd src/vlq-BtoTW-RDF/PNetEffs/
 
 export PATH=$PATH:$macroDir
 
 # Run analyzer_RDF files through two C files
 echo "Running RDF:"
 #root -l -b -q runRDF.C\(\"testnum1\",\"testnum2\",\"infilename\",\"year\"\) 
-root -l -b -q runRDF.C\(\"${testnum1}\",\"${testnum2}\",\"${infilename}\",\"${year}\"\) 
+#root -l -b -q runRDF.C\(\"${testnum1}\",\"${testnum2}\",\"${infilename}\",\"${year}\"\) 
+root -l -b -q runEff.C\(\"0\",\"99\",\"${infilename}\",\"${year}\"\)
 
 # Viewing ROOT Files
 echo "ROOT Files:"
