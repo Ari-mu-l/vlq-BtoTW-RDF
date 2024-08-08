@@ -32,14 +32,15 @@ tar -xf ${scratch}/rdfjobs.tar
 rm ${scratch}/rdfjobs.tar
 
 eval `scramv1 runtime -sh`
-cd src/vlq-BtoTW-RDF/
+cd src/vlq-BtoTW-RDF/TrigEffs/
 
 export PATH=$PATH:$macroDir
 
 # Run analyzer_RDF files through two C files
 echo "Running RDF:"
 #root -l -b -q runRDF.C\(\"testnum1\",\"testnum2\",\"infilename\",\"year\"\) 
-root -l -b -q runRDF.C\(\"${testnum1}\",\"${testnum2}\",\"${infilename}\",\"${year}\"\) 
+root -l -b -q runEff.C\(\"${testnum1}\",\"${testnum2}\",\"${infilename}\",\"${year}\"\) 
+#root -l -b -q runEff.C\(\"0\",\"400\",\"${infilename}\",\"${year}\"\)
 
 # Viewing ROOT Files
 echo "ROOT Files:"
