@@ -120,7 +120,7 @@ void rdf::analyzer_RDF(TString testNum, TString jesvar)
 
   auto pileupcorrset = CorrectionSet::from_file("/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/LUM/"+yrstr+"_UL/puWeights.json.gz");
   auto electroncorrset = CorrectionSet::from_file("/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/EGM/"+yrstr+"_UL/electron.json.gz");
-  auto muoncorrset = CorrectionSet::from_file("/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/MUO/"+yrstr+"_UL/muon_Z.json.gz");
+  auto muoncorrset = CorrectionSet::from_file("/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/MUO/"+yrstr+"_UL/muon_HighPt.json.gz");
   auto btagcorrset = CorrectionSet::from_file("/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/BTV/"+yrstr+"_UL/btagging.json.gz");
   auto jetvetocorrset = CorrectionSet::from_file("/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/JME/"+yrstr+"_UL/jetvetomaps.json.gz");
   auto jmarcorrset = CorrectionSet::from_file("/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/JME/"+yrstr+"_UL/jmar.json.gz");
@@ -128,8 +128,8 @@ void rdf::analyzer_RDF(TString testNum, TString jesvar)
 
   auto pileupcorr = pileupcorrset->at("Collisions"+yr+"_UltraLegacy_goldenJSON"); std::cout << "\t loaded pileup" << std::endl;
   auto electroncorr = electroncorrset->at("UL-Electron-ID-SF"); std::cout << "\t loaded elec id" << std::endl;
-  auto muoncorr = muoncorrset->at("NUM_TrackerMuons_DEN_genTracks"); std::cout << "\t loaded muon reco" << std::endl;
-  auto muonidcorr = muoncorrset->at("NUM_MediumID_DEN_TrackerMuons"); std::cout << "\t loaded muon id" << std::endl;
+  auto muoncorr = muoncorrset->at("NUM_GlobalMuons_DEN_TrackerMuonProbes"); std::cout << "\t loaded muon reco" << std::endl;
+  auto muonidcorr = muoncorrset->at("NUM_MediumID_DEN_GlobalMuonProbes"); std::cout << "\t loaded muon id" << std::endl;
   auto btagcorr = btagcorrset->at("deepJet_shape"); std::cout << "\t loaded btags" << std::endl;
   auto btagwpbccorr = btagcorrset->at("deepJet_comb"); std::cout << "\t loaded btags" << std::endl;
   auto btagwplcorr = btagcorrset->at("deepJet_incl"); std::cout << "\t loaded btags" << std::endl;
@@ -141,8 +141,8 @@ void rdf::analyzer_RDF(TString testNum, TString jesvar)
   auto metphicorr = metcorrset->at("phi_metphicorr_pfmet_mc"); std::cout << "\t loaded met phi xy" << std::endl;
   if(!isMC){metptcorr = metcorrset->at("pt_metphicorr_pfmet_data"); metphicorr = metcorrset->at("phi_metphicorr_pfmet_data");}
   
-  auto ak4corrset = CorrectionSet::from_file("jsonpog-integration/POG/JME/"+yrstr+"_UL/jet_jerc.json"); 
-  auto ak8corrset = CorrectionSet::from_file("jsonpog-integration/POG/JME/"+yrstr+"_UL/fatJet_jerc.json"); 
+  auto ak4corrset = CorrectionSet::from_file("/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/JME/"+yrstr+"_UL/jet_jerc.json.gz"); 
+  auto ak8corrset = CorrectionSet::from_file("/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/JME/"+yrstr+"_UL/fatJet_jerc.json.gz"); 
   auto ak4corr = ak4corrset->compound().at("Summer19"+jecyr+"_"+jecver+"_MC_L1L2L3Res_AK4PFchs"); std::cout << "\t loaded jerc MC" << std::endl;
   auto ak4corrL1 = ak4corrset->at("Summer19"+jecyr+"_"+jecver+"_MC_L1FastJet_AK4PFchs"); std::cout << "\t loaded jerc L1" << std::endl;
   if(!isMC){ ak4corr = ak4corrset->compound().at("Summer19"+jecyr+"_Run"+jecera+"_"+jecver+"_DATA_L1L2L3Res_AK4PFchs"); std::cout << "\t loaded jerc data" << std::endl;}
@@ -185,9 +185,9 @@ void rdf::analyzer_RDF(TString testNum, TString jesvar)
   auto recofunc = [electroncorr,muoncorr,yrstr](const float &pt, const float &eta, const bool &isEl){
     RVec<double> reco;
     if(isEl == 0) { 
-      reco = {muoncorr->evaluate({yrstr+"_UL",abs(eta),pt,"sf"}), 
-	      muoncorr->evaluate({yrstr+"_UL",abs(eta),pt,"systup"}), 
-	      muoncorr->evaluate({yrstr+"_UL",abs(eta),pt,"systdown"})};
+      reco = {muoncorr->evaluate({abs(eta),pt*cosh(eta),"nominal"}), 
+	      muoncorr->evaluate({abs(eta),pt*cosh(eta),"systup"}), 
+	      muoncorr->evaluate({abs(eta),pt*cosh(eta),"systdown"})};
     }else{
       reco = {electroncorr->evaluate({yrstr,"sf","RecoAbove20",eta,pt}), 
 	      electroncorr->evaluate({yrstr,"sfup","RecoAbove20",eta,pt}), 
@@ -202,9 +202,9 @@ void rdf::analyzer_RDF(TString testNum, TString jesvar)
       int etabin = (std::upper_bound(elsf_etas.begin(), elsf_etas.end(), eta) - elsf_etas.begin())-1;
       id = {elecidsfs[ptbin][etabin], elecidsfuncs[ptbin][etabin]};      
     }else{
-      id = {muonidcorr->evaluate({yrstr+"_UL",abs(eta),pt,"sf"}), 
-	    muonidcorr->evaluate({yrstr+"_UL",abs(eta),pt,"systup"}), 
-	    muonidcorr->evaluate({yrstr+"_UL",abs(eta),pt,"systdown"})};
+      id = {muonidcorr->evaluate({abs(eta),pt,"nominal"}), 
+	    muonidcorr->evaluate({abs(eta),pt,"systup"}), 
+	    muonidcorr->evaluate({abs(eta),pt,"systdown"})};
     }
     return id;
   }; 
@@ -354,9 +354,9 @@ void rdf::analyzer_RDF(TString testNum, TString jesvar)
         //   }
         }
       }else if(match[ijet] == 24 && pt[ijet] > 200 && pt[ijet] < 800 && abs(eta[ijet]) < 2.4){
-        Wsf = static_cast<float>(Wcorr->evaluate({eta[ijet], pt[ijet], "nom", "1p0"}));
-        Wsfup = static_cast<float>(Wcorr->evaluate({eta[ijet], pt[ijet], "up", "1p0"}));
-        Wsfdn = static_cast<float>(Wcorr->evaluate({eta[ijet], pt[ijet], "down", "1p0"}));
+        Wsf = static_cast<float>(Wcorr->evaluate({eta[ijet], pt[ijet], "nom", "5p0"}));
+        Wsfup = static_cast<float>(Wcorr->evaluate({eta[ijet], pt[ijet], "up", "5p0"}));
+        Wsfdn = static_cast<float>(Wcorr->evaluate({eta[ijet], pt[ijet], "down", "5p0"}));
         if(tag[ijet] == 2 || tag[ijet] == 3){ // W tagged
           pnetweights[3] *= Wsf;
           pnetweights[4] *= Wsfup;
@@ -585,8 +585,9 @@ void rdf::analyzer_RDF(TString testNum, TString jesvar)
   string elHEMcut = "";
   if(year == "2018") elHEMcut = " && (Electron_eta > -1.479 || (Electron_phi < -1.57 || Electron_phi > -0.87))";
   auto LepDefs = truth.Define("Electron_cutBasedIdNoIso_tight", "Electron_cutBasedIdNoIso_tight(nElectron, Electron_vidNestedWPBitmap, Electron_cutBased, Electron_pfRelIso03_all,Electron_eta,Electron_pt,Electron_sieie,Electron_eInvMinusPInv)")
-    .Define("TPassMu", "abs(Muon_eta)<2.4 && Muon_mediumId==1 && Muon_miniIsoId>=3 && abs(Muon_dz) < 0.5 && Muon_dxy < 0.2")
-    .Define("TPassEl", Form("(abs(Electron_eta)<1.442 || (abs(Electron_eta)>1.566 && abs(Electron_eta)<2.5)) && Electron_cutBasedIdNoIso_tight==1 && Electron_miniPFRelIso_all<0.1%s",elHEMcut.c_str()))
+    .Define("passElIP","elIP(Electron_dz,Electron_dxy,Electron_eta)")
+    .Define("TPassMu", "abs(Muon_eta)<2.4 && Muon_mediumId==1 && Muon_miniIsoId>=3 && abs(Muon_dz) < 0.5 && abs(Muon_dxy) < 0.2")
+    .Define("TPassEl", Form("(abs(Electron_eta)<1.442 || (abs(Electron_eta)>1.566 && abs(Electron_eta)<2.5)) && passElIP > 0 && Electron_cutBasedIdNoIso_tight==1 && Electron_miniPFRelIso_all<0.1%s",elHEMcut.c_str()))
     .Define("VetoMu", "TPassMu && (Muon_pt>25)")
     .Define("VetoEl", "TPassEl && (Electron_pt>25)")
     .Define("SignalIsoMu", "TPassMu && (Muon_pt>=55)")
@@ -712,7 +713,6 @@ void rdf::analyzer_RDF(TString testNum, TString jesvar)
     .Define("gcJet_eta", "reorder(cleanJet_eta[goodcleanJets == true],gcJet_ptargsort)")
     .Define("gcJet_phi", "reorder(cleanJet_phi[goodcleanJets == true],gcJet_ptargsort)")
     .Define("gcJet_mass", "reorder(cleanJet_mass[goodcleanJets == true],gcJet_ptargsort)")
-    .Define("gcJet_genJetIdx","reorder(Jet_genJetIdx[goodcleanJets == true],gcJet_ptargsort)")
     .Define("gcJet_puPass","reorder(cleanJet_puPass[goodcleanJets == true],gcJet_ptargsort)")
     .Define("gcJet_DeepFlav", "reorder(Jet_btagDeepFlavB[goodcleanJets == true],gcJet_ptargsort)")
     .Define("gcJet_DeepFlavL", Form("gcJet_DeepFlav > %f",deepjetL)) 
@@ -745,7 +745,6 @@ void rdf::analyzer_RDF(TString testNum, TString jesvar)
     .Define("gcforwJet_eta", "reorder(cleanJet_eta[goodcleanForwardJets == true],gcforwJet_ptargsort)")
     .Define("gcforwJet_phi", "reorder(cleanJet_phi[goodcleanForwardJets == true],gcforwJet_ptargsort)")
     .Define("gcforwJet_mass", "reorder(cleanJet_mass[goodcleanForwardJets == true],gcforwJet_ptargsort)")
-    .Define("gcforwJet_genJetIdx","reorder(Jet_genJetIdx[goodcleanForwardJets == true],gcforwJet_ptargsort)")
     .Define("gcforwJet_puPass","reorder(cleanJet_puPass[goodcleanForwardJets == true],gcforwJet_ptargsort)")
     .Define("gcforwJet_DeepFlav", "reorder(Jet_btagDeepFlavB[goodcleanForwardJets == true],gcforwJet_ptargsort)");
 
@@ -778,6 +777,8 @@ void rdf::analyzer_RDF(TString testNum, TString jesvar)
       .Define("gcFatJet_hadronFlavour","reorder(FatJet_hadronFlavour[goodcleanFatJets == true],gcFatJet_ptargsort)")
       .Define("gcFatJet_genmatch", Form("FatJet_matching(\"%s\", gcFatJet_eta, gcFatJet_phi, NFatJets, gcFatJet_hadronFlavour, nGenPart, GenPart_pdgId, GenPart_phi, GenPart_eta, GenPart_genPartIdxMother, t_bkg_idx, W_bkg_idx)",sample.c_str()))
       .Define("gcOSFatJet_genmatch", "gcFatJet_genmatch[OS_gcFatJets==true]")
+      .Define("gcJet_genJetIdx","reorder(Jet_genJetIdx[goodcleanJets == true],gcJet_ptargsort)")
+      .Define("gcforwJet_genJetIdx","reorder(Jet_genJetIdx[goodcleanForwardJets == true],gcforwJet_ptargsort)")
       .Define("leptonRecoSF", recofunc, {"lepton_pt","lepton_eta","isEl"})
       .Define("leptonIDSF", idfunc, {"lepton_pt","lepton_eta","isEl"})
       .Define("leptonIsoSF", isofunc, {"lepton_pt","lepton_eta","isEl"})
@@ -891,7 +892,7 @@ void rdf::analyzer_RDF(TString testNum, TString jesvar)
       if(colName.BeginsWith("HLT") || colName.BeginsWith("HT") || colName.BeginsWith("boosted") || colName.BeginsWith("Deep")) continue;
       if(colName.BeginsWith("Flag") || colName == "Bprime_gen_info" || colName == "t_gen_info" || colName == "W_gen_info" || colName == "metxyoutput") continue;
       if(colName == "assignleps" || colName == "pnetoutput" || colName == "t_output" || colName == "Bprime_output" || colName.BeginsWith("Other")) continue;
-      if(colName.BeginsWith("PS") || colName.BeginsWith("PV") || colName.BeginsWith("Tk") || colName.BeginsWith("Trig")) continue;
+      if(colName.BeginsWith("PS") || colName.BeginsWith("Tk") || colName.BeginsWith("Trig")) continue;
       if(colName.BeginsWith("nCorr") || colName.BeginsWith("nFsr")) continue;
       if(colName.BeginsWith("nGen") || colName.BeginsWith("nIso") || colName.BeginsWith("nLow")) continue;
       if(colName.BeginsWith("nOther") || colName.BeginsWith("nPS") || colName.BeginsWith("nPhoton")) continue;
